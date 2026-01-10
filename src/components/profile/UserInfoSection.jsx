@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 
 const UserInfoSection = () => {
@@ -9,14 +8,14 @@ const UserInfoSection = () => {
             <View style={styles.contentContainer}>
                 <View style={styles.topSection}>
                     <View style={styles.avatarContainer}>
-                        <MaterialIcons name="account-circle" size={50} color={COLORS.textSecondary} />
+                        <Text style={styles.avatarPlaceholder}>👤</Text>
                     </View>
 
                     <View style={styles.detailsContainer}>
                         <View style={styles.headerRow}>
                             <Text style={styles.welcomeText}>Welcome, Vishnu !</Text>
                             <TouchableOpacity style={styles.editButton}>
-                                <MaterialIcons name="edit" size={16} color={COLORS.textSecondary} />
+                                <Text style={styles.editIcon}>✎</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -67,6 +66,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: SPACING.m,
     },
+    avatarPlaceholder: {
+        fontSize: 24,
+    },
     detailsContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -83,6 +85,10 @@ const styles = StyleSheet.create({
     },
     editButton: {
         padding: 4,
+    },
+    editIcon: {
+        fontSize: 16,
+        color: COLORS.textSecondary,
     },
     emailText: {
         fontSize: 11,

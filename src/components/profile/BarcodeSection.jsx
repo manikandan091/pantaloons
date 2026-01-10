@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 
 const BarcodeSection = () => {
@@ -8,7 +7,7 @@ const BarcodeSection = () => {
         <View style={styles.card}>
             <View style={styles.header}>
                 <Text style={styles.title}>Your Pantaloons ID</Text>
-                <MaterialIcons name="info-outline" size={20} color={COLORS.primaryDark} style={styles.infoIcon} />
+                <Text style={styles.infoIcon}>ⓘ</Text>
             </View>
 
             <View style={styles.barcodeContainer}>
@@ -66,6 +65,8 @@ const styles = StyleSheet.create({
     infoIcon: {
         position: 'absolute',
         right: 0,
+        color: COLORS.primaryDark,
+        fontSize: 16,
     },
     barcodeContainer: {
         alignItems: 'center',

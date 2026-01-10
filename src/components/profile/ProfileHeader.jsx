@@ -1,19 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, FONT_SIZE, SPACING } from './theme';
 
 const ProfileHeader = () => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.iconButton}>
-                <MaterialIcons name="arrow-back" size={24} color={COLORS.black} />
+                {/* Placeholder for Back Arrow */}
+                <Text style={styles.iconText}>{'<'}</Text>
             </TouchableOpacity>
 
             <Text style={styles.title}>MY ACCOUNT</Text>
 
             <TouchableOpacity style={styles.iconButton}>
-                <MaterialIcons name="shopping-cart" size={24} color={COLORS.black} />
+                {/* Placeholder for Cart Icon */}
+                <Text style={styles.iconText}>🛒</Text>
             </TouchableOpacity>
         </View>
     );
@@ -38,6 +39,10 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         padding: SPACING.s,
+    },
+    iconText: {
+        fontSize: 20,
+        color: COLORS.primaryDark, // Using primary color for icons for now
     },
 });
 

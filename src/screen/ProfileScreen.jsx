@@ -10,15 +10,15 @@ import { COLORS } from '../components/profile/theme';
 
 const ProfileScreen = () => {
     const myProfileItems = [
-        { label: 'MY ORDERS', subtitle: 'Find order updates, return & cancellation', icon: 'inventory-2' },
-        { label: 'WISHLIST', subtitle: 'Save & view your favourites here', icon: 'favorite-border' },
-        { label: 'SAVED CARD', subtitle: 'Securely stored card for easy online payments', icon: 'credit-card' },
-        { label: 'CUSTOMER SUPPORT', subtitle: 'Contact us & Store locator', icon: 'headset-mic' },
-        { label: 'E-BILLS', subtitle: 'Find your digital invoices', icon: 'receipt' },
-        { label: 'ADDRESSES', subtitle: 'Edit & Add new addresses', icon: 'location-on' },
-        { label: 'PANTALOONS CREDITS', subtitle: 'Check your Pantaloons Credit', icon: 'account-balance-wallet' },
-        { label: 'PT GIFT CARD', subtitle: 'Buy or check your Giftcard', icon: 'card-giftcard' },
-        { label: 'GREENCARD', subtitle: 'Check your Greencard points', icon: 'credit-card' },
+        { label: 'MY ORDERS', subtitle: 'Find order updates, return & cancellation', icon: '📦' },
+        { label: 'WISHLIST', subtitle: 'Save & view your favourites here', icon: '♡' },
+        { label: 'SAVED CARD', subtitle: 'Securely stored card for easy online payments', icon: '💳' },
+        { label: 'CUSTOMER SUPPORT', subtitle: 'Contact us & Store locator', icon: '🎧' },
+        { label: 'E-BILLS', subtitle: 'Find your digital invoices', icon: '📄' },
+        { label: 'ADDRESSES', subtitle: 'Edit & Add new addresses', icon: '📍' },
+        { label: 'PANTALOONS CREDITS', subtitle: 'Check your Pantaloons Credit', icon: '💳' },
+        { label: 'PT GIFT CARD', subtitle: 'Buy or check your Giftcard', icon: '🎁' },
+        { label: 'GREENCARD', subtitle: 'Check your Greencard points', icon: '💳' },
     ];
 
     const othersItems = [

@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 
 const MenuItem = ({ icon, label, subtitle, isLast }) => {
     return (
         <TouchableOpacity style={styles.container}>
             <View style={styles.iconContainer}>
-                {icon ? <MaterialIcons name={icon} size={24} color={COLORS.textSecondary} /> : null}
+                <Text style={styles.icon}>{icon}</Text>
             </View>
             <View style={[styles.contentContainer, isLast && styles.noBorder]}>
                 <View style={styles.textContainer}>
@@ -30,6 +29,10 @@ const styles = StyleSheet.create({
         marginRight: SPACING.l,
         width: 24,
         alignItems: 'center',
+    },
+    icon: {
+        fontSize: 18,
+        color: COLORS.textSecondary,
     },
     contentContainer: {
         flex: 1,
