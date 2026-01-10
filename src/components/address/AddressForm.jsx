@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -7,25 +7,35 @@ import {
     TouchableOpacity,
     ScrollView,
     ActivityIndicator,
+    Modal,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { fetchLocationByPincode, isValidPincode } from '../../utils/pincodeService';
+import AddressMap from './AddressMap';
 
-const AddressForm = ({ onSubmit }) => {
+const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
     const [formData, setFormData] = useState({
-        fullName: '',
+        firstName: '',
+        lastName: '',
+        mobileNumber: '',
+        address: '',
+        houseNo: '',
+        streetName: '',
+        area: '',
+        landmark: '',
         pincode: '',
         city: '',
         state: '',
-        addressDetails: '',
-        locality: '',
-        landmark: '',
-        phoneNumber: '',
+        latitude: '',
+        longitude: '',
         addressType: 'Home',
+        isDefault: false,
     });
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [pincodeLoading, setPincodeLoading] = useState(false);
+    const [showMap, setShowMap] = useState(false);
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -74,15 +84,37 @@ const AddressForm = ({ onSubmit }) => {
     const handlePhoneChange = (value) => {
         const numericValue = value.replace(/[^0-9]/g, '');
         if (numericValue.length <= 10) {
-            handleInputChange('phoneNumber', numericValue);
+            handleInputChange('mobileNumber', numericValue);
         }
     };
 
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.fullName.trim()) {
-            newErrors.fullName = 'Full name is required';
+        if (!formData.firstName.trim()) {
+            newErrors.firstName = 'First name is required';
+        }
+
+        if (!formData.lastName.trim()) {
+            newErrors.lastName = 'Last name is required';
+        }
+
+        if (!formData.mobileNumber) {
+            newErrors.mobileNumber = 'Mobile number is required';
+        } else if (formData.mobileNumber.length !== 10) {
+            newErrors.mobileNumber = 'Please enter a valid 10-digit mobile number';
+        }
+
+        if (!formData.houseNo.trim()) {
+            newErrors.houseNo = 'House no/Building name is required';
+        }
+
+        if (!formData.streetName.trim()) {
+            newErrors.streetName = 'Street name is required';
+        }
+
+        if (!formData.area.trim()) {
+            newErrors.area = 'Area is required';
         }
 
         if (!formData.pincode) {
@@ -97,20 +129,6 @@ const AddressForm = ({ onSubmit }) => {
 
         if (!formData.state) {
             newErrors.state = 'State is required';
-        }
-
-        if (!formData.addressDetails.trim()) {
-            newErrors.addressDetails = 'Address details are required';
-        }
-
-        if (!formData.locality.trim()) {
-            newErrors.locality = 'Locality is required';
-        }
-
-        if (!formData.phoneNumber) {
-            newErrors.phoneNumber = 'Phone number is required';
-        } else if (formData.phoneNumber.length !== 10) {
-            newErrors.phoneNumber = 'Please enter a valid 10-digit phone number';
         }
 
         setErrors(newErrors);
@@ -133,26 +151,162 @@ const AddressForm = ({ onSubmit }) => {
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.formContent}>
-                {/* Full Name */}
+                {/* Contact Details Section */}
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Contact Details</Text>
+                    <TouchableOpacity onPress={onBack} style={styles.closeButton}>
+                        <Ionicons name="close" size={24} color="#000000" />
+                    </TouchableOpacity>
+                </View>
+
+                {/* First Name */}
                 <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Full Name *</Text>
+                    <Text style={styles.label}>First name*</Text>
                     <TextInput
-                        style={[styles.input, errors.fullName && styles.inputError]}
-                        placeholder="Enter your full name"
-                        value={formData.fullName}
-                        onChangeText={(value) => handleInputChange('fullName', value)}
+                        style={[styles.input, errors.firstName && styles.inputError]}
+                        placeholder="Mani"
+                        value={formData.firstName}
+                        onChangeText={(value) => handleInputChange('firstName', value)}
                         placeholderTextColor="#999999"
                     />
-                    {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
+                    {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+                </View>
+
+                {/* Last Name */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>Last name</Text>
+                    <TextInput
+                        style={[styles.input, errors.lastName && styles.inputError]}
+                        placeholder="M"
+                        value={formData.lastName}
+                        onChangeText={(value) => handleInputChange('lastName', value)}
+                        placeholderTextColor="#999999"
+                    />
+                    {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+                </View>
+
+                {/* Mobile Number */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>Mobile number*</Text>
+                    <TextInput
+                        style={[styles.input, errors.mobileNumber && styles.inputError]}
+                        placeholder="7395851198"
+                        value={formData.mobileNumber}
+                        onChangeText={handlePhoneChange}
+                        keyboardType="phone-pad"
+                        maxLength={10}
+                        placeholderTextColor="#999999"
+                    />
+                    {errors.mobileNumber && <Text style={styles.errorText}>{errors.mobileNumber}</Text>}
+                </View>
+
+                {/* Choose from map checkbox */}
+                <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => setShowMap(!showMap)}
+                    activeOpacity={0.7}
+                >
+                    <View style={styles.checkbox}>
+                        {showMap && (
+                            <View style={styles.checkboxChecked} />
+                        )}
+                    </View>
+                    <Text style={styles.checkboxLabel}>Choose from map</Text>
+                </TouchableOpacity>
+
+                {/* Google Map for Location Selection - Only show if checkbox is checked */}
+                {showMap && (
+                    <View style={styles.mapContainer}>
+                        <AddressMap
+                            onLocationSelect={(coordinate) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    latitude: coordinate.latitude.toFixed(6),
+                                    longitude: coordinate.longitude.toFixed(6),
+                                }));
+                            }}
+                            markerCoordinate={
+                                formData.latitude && formData.longitude
+                                    ? {
+                                        latitude: parseFloat(formData.latitude),
+                                        longitude: parseFloat(formData.longitude)
+                                    }
+                                    : null
+                            }
+                        />
+                    </View>
+                )}
+
+                {/* Address Field */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>Address</Text>
+                    <TextInput
+                        style={[styles.input]}
+                        placeholder="Enter address"
+                        value={formData.address}
+                        onChangeText={(value) => handleInputChange('address', value)}
+                        placeholderTextColor="#999999"
+                    />
+                </View>
+
+                {/* House no/Building name */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>House no/Building name*</Text>
+                    <TextInput
+                        style={[styles.input, errors.houseNo && styles.inputError]}
+                        placeholder=""
+                        value={formData.houseNo}
+                        onChangeText={(value) => handleInputChange('houseNo', value)}
+                        placeholderTextColor="#999999"
+                    />
+                    {errors.houseNo && <Text style={styles.errorText}>{errors.houseNo}</Text>}
+                </View>
+
+                {/* Street name */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>Street name</Text>
+                    <TextInput
+                        style={[styles.input, errors.streetName && styles.inputError]}
+                        placeholder=""
+                        value={formData.streetName}
+                        onChangeText={(value) => handleInputChange('streetName', value)}
+                        placeholderTextColor="#999999"
+                    />
+                    {errors.streetName && <Text style={styles.errorText}>{errors.streetName}</Text>}
+                </View>
+
+                {/* Area */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>Area</Text>
+                    <TextInput
+                        style={[styles.input, errors.area && styles.inputError]}
+                        placeholder=""
+                        value={formData.area}
+                        onChangeText={(value) => handleInputChange('area', value)}
+                        placeholderTextColor="#999999"
+                    />
+                    {errors.area && <Text style={styles.errorText}>{errors.area}</Text>}
+                </View>
+
+                {/* Landmark */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>Landmark</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder=""
+                        value={formData.landmark}
+                        onChangeText={(value) => handleInputChange('landmark', value)}
+                        placeholderTextColor="#999999"
+                    />
                 </View>
 
                 {/* Pincode */}
                 <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Pincode *</Text>
+                    <Text style={styles.label}>Pincode*</Text>
                     <View style={styles.inputWithLoader}>
                         <TextInput
                             style={[styles.input, errors.pincode && styles.inputError]}
-                            placeholder="Enter 6-digit pincode"
+                            placeholder=""
                             value={formData.pincode}
                             onChangeText={handlePincodeChange}
                             keyboardType="numeric"
@@ -162,7 +316,7 @@ const AddressForm = ({ onSubmit }) => {
                         {pincodeLoading && (
                             <ActivityIndicator
                                 size="small"
-                                color="#00B0B5"
+                                color="#00BCD4"
                                 style={styles.loader}
                             />
                         )}
@@ -170,95 +324,61 @@ const AddressForm = ({ onSubmit }) => {
                     {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
                 </View>
 
-                {/* City and State Row */}
-                <View style={styles.rowContainer}>
-                    <View style={[styles.fieldContainer, styles.halfWidth]}>
-                        <Text style={styles.label}>City *</Text>
+                {/* City/District */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>City/District*</Text>
+                    <TextInput
+                        style={[styles.input, styles.disabledInput]}
+                        placeholder=""
+                        value={formData.city}
+                        editable={false}
+                        placeholderTextColor="#999999"
+                    />
+                </View>
+
+                {/* State */}
+                <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>State*</Text>
+                    <TextInput
+                        style={[styles.input, styles.disabledInput]}
+                        placeholder=""
+                        value={formData.state}
+                        editable={false}
+                        placeholderTextColor="#999999"
+                    />
+                </View>
+
+                {/* Latitude */}
+                {formData.latitude !== '' && (
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Latitude</Text>
                         <TextInput
                             style={[styles.input, styles.disabledInput]}
-                            placeholder="Auto-filled"
-                            value={formData.city}
+                            value={formData.latitude}
                             editable={false}
                             placeholderTextColor="#999999"
                         />
                     </View>
+                )}
 
-                    <View style={[styles.fieldContainer, styles.halfWidth]}>
-                        <Text style={styles.label}>State *</Text>
+                {/* Longitude */}
+                {formData.longitude !== '' && (
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Longitude</Text>
                         <TextInput
                             style={[styles.input, styles.disabledInput]}
-                            placeholder="Auto-filled"
-                            value={formData.state}
+                            value={formData.longitude}
                             editable={false}
                             placeholderTextColor="#999999"
                         />
                     </View>
-                </View>
-
-                {/* Address Details */}
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Address Details *</Text>
-                    <TextInput
-                        style={[styles.input, styles.textArea, errors.addressDetails && styles.inputError]}
-                        placeholder="Flat, House no., Building, Company, Apartment"
-                        value={formData.addressDetails}
-                        onChangeText={(value) => handleInputChange('addressDetails', value)}
-                        multiline
-                        numberOfLines={3}
-                        textAlignVertical="top"
-                        placeholderTextColor="#999999"
-                    />
-                    {errors.addressDetails && <Text style={styles.errorText}>{errors.addressDetails}</Text>}
-                </View>
-
-                {/* Locality */}
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Locality *</Text>
-                    <TextInput
-                        style={[styles.input, errors.locality && styles.inputError]}
-                        placeholder="Area, Street, Sector, Village"
-                        value={formData.locality}
-                        onChangeText={(value) => handleInputChange('locality', value)}
-                        placeholderTextColor="#999999"
-                    />
-                    {errors.locality && <Text style={styles.errorText}>{errors.locality}</Text>}
-                </View>
-
-                {/* Landmark */}
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Landmark (Optional)</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="E.g. Near Apollo Hospital"
-                        value={formData.landmark}
-                        onChangeText={(value) => handleInputChange('landmark', value)}
-                        placeholderTextColor="#999999"
-                    />
-                </View>
-
-                {/* Phone Number */}
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Phone Number *</Text>
-                    <View style={styles.phoneContainer}>
-                        <Text style={styles.phonePrefix}>+91</Text>
-                        <TextInput
-                            style={[styles.input, styles.phoneInput, errors.phoneNumber && styles.inputError]}
-                            placeholder="Enter 10-digit mobile number"
-                            value={formData.phoneNumber}
-                            onChangeText={handlePhoneChange}
-                            keyboardType="phone-pad"
-                            maxLength={10}
-                            placeholderTextColor="#999999"
-                        />
-                    </View>
-                    {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
-                </View>
+                )}
 
                 {/* Address Type */}
                 <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Address Type *</Text>
+                    <Text style={styles.label}>Address Type</Text>
                     <View style={styles.addressTypeContainer}>
-                        {['Home', 'Work', 'Other'].map((type) => (
+                        {['Home', 'Office', 'Others'].map((type) => (
                             <TouchableOpacity
                                 key={type}
                                 style={[
@@ -281,6 +401,20 @@ const AddressForm = ({ onSubmit }) => {
                     </View>
                 </View>
 
+                {/* Make this as default address */}
+                <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => handleInputChange('isDefault', !formData.isDefault)}
+                    activeOpacity={0.7}
+                >
+                    <View style={styles.checkbox}>
+                        {formData.isDefault && (
+                            <View style={styles.checkboxChecked} />
+                        )}
+                    </View>
+                    <Text style={styles.checkboxLabel}>Make this as default address</Text>
+                </TouchableOpacity>
+
                 {/* Submit Button */}
                 <TouchableOpacity
                     style={[styles.submitButton, loading && styles.submitButtonDisabled]}
@@ -291,7 +425,7 @@ const AddressForm = ({ onSubmit }) => {
                     {loading ? (
                         <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
-                        <Text style={styles.submitButtonText}>SAVE ADDRESS</Text>
+                        <Text style={styles.submitButtonText}>SHIP TO THIS ADDRESS</Text>
                     )}
                 </TouchableOpacity>
             </View>
@@ -302,25 +436,49 @@ const AddressForm = ({ onSubmit }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#ffffffff',
+        width: '90%',
+        boxShadow: '0px 4px 4px rgba(0.25, 0.25, 0.25, 0.25)',
+        borderRadius: 12,
+        margin: 'auto',
+        marginTop: 16,
     },
     formContent: {
         padding: 16,
+        paddingTop: 8,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E0E0E0',
+    },
+    closeButton: {
+        padding: 4,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#000000',
     },
     fieldContainer: {
         marginBottom: 16,
     },
     label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#333333',
-        marginBottom: 8,
+        fontSize: 13,
+        fontWeight: '400',
+        color: '#000000',
+        marginBottom: 6,
     },
     input: {
         borderWidth: 1,
-        borderColor: '#CCCCCC',
-        borderRadius: 4,
+        borderColor: '#D0D0D0',
+        borderRadius: 10,
         padding: 12,
+
         fontSize: 14,
         color: '#000000',
         backgroundColor: '#FFFFFF',
@@ -331,10 +489,6 @@ const styles = StyleSheet.create({
     disabledInput: {
         backgroundColor: '#F5F5F5',
         color: '#666666',
-    },
-    textArea: {
-        height: 80,
-        paddingTop: 12,
     },
     errorText: {
         color: '#FF0000',
@@ -349,58 +503,67 @@ const styles = StyleSheet.create({
         right: 12,
         top: 12,
     },
-    rowContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    halfWidth: {
-        width: '48%',
-    },
-    phoneContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    phonePrefix: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#333333',
-        marginRight: 8,
-        paddingVertical: 12,
-    },
-    phoneInput: {
-        flex: 1,
+    mapContainer: {
+        marginBottom: 20,
+        borderRadius: 12,
+        overflow: 'hidden',
     },
     addressTypeContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
+        gap: 8,
     },
     addressTypeButton: {
-        flex: 1,
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         borderWidth: 1,
-        borderColor: '#CCCCCC',
-        borderRadius: 4,
-        marginHorizontal: 4,
+        borderColor: '#D0D0D0',
+        borderRadius: 20,
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
     },
     addressTypeButtonActive: {
-        backgroundColor: '#00B0B5',
-        borderColor: '#00B0B5',
+        backgroundColor: '#FFC107',
+        borderColor: '#FFC107',
     },
     addressTypeText: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 13,
+        fontWeight: '500',
         color: '#666666',
     },
     addressTypeTextActive: {
-        color: '#FFFFFF',
+        color: '#000000',
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        marginTop: 4,
+    },
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderColor: '#00BCD4',
+        borderRadius: 4,
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    checkboxChecked: {
+        width: 12,
+        height: 12,
+        backgroundColor: '#00BCD4',
+        borderRadius: 2,
+    },
+    checkboxLabel: {
+        fontSize: 13,
+        color: '#000000',
     },
     submitButton: {
-        backgroundColor: '#00B0B5',
-        paddingVertical: 16,
-        borderRadius: 4,
+        backgroundColor: '#00BCD4',
+        paddingVertical: 14,
+        borderRadius: 6,
         alignItems: 'center',
         marginTop: 8,
         marginBottom: 24,
@@ -410,10 +573,11 @@ const styles = StyleSheet.create({
     },
     submitButtonText: {
         color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: 'bold',
-        letterSpacing: 1,
+        fontSize: 15,
+        fontWeight: '700',
+        letterSpacing: 0.5,
     },
 });
 
 export default AddressForm;
+

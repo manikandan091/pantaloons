@@ -5,7 +5,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const MarqueeHeader = ({
     text = "The SALE just got bigger & better! Flat 50% OFF* Is Now Live",
-    speed = 50
+    speed = 10
 }) => {
     const scrollX = useRef(new Animated.Value(0)).current;
     const textWidth = useRef(0);
@@ -58,7 +58,7 @@ const MarqueeHeader = ({
 const styles = StyleSheet.create({
     container: {
         height: 32,
-        backgroundColor: '#000000',
+        backgroundColor: '#ffffffff',
         justifyContent: 'center',
         overflow: 'hidden',
     },
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     text: {
-        color: '#FFFFFF',
+        color: '#000000ff',
         fontSize: 13,
         fontWeight: '400',
         paddingHorizontal: 10,

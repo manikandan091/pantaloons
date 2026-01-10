@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
     },
     centerSection: {
         flex: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
+        // alignItems: 'center',
+        // justifyContent: 'center',
     },
     rightSection: {
         flex: 1,
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#00B0B5',
-        letterSpacing: 1.5,
+        letterSpacing: 1.5, 
     },
 });
 

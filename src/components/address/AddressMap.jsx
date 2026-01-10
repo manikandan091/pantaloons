@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Platform, Alert } from 'react-native';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import Geolocation from '@react-native-community/geolocation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const AddressMap = ({
@@ -7,100 +9,157 @@ const AddressMap = ({
     onLocationSelect,
     markerCoordinate
 }) => {
-    const [location, setLocation] = useState('Delhi, India');
+    const [region, setRegion] = useState(
+        initialRegion || {
+            latitude: 28.6139,
+            longitude: 77.2090,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+        }
+    );
 
-    const handleSelectLocation = () => {
-        console.log('Map placeholder - Location selection');
+    const [markerPosition, setMarkerPosition] = useState(
+        markerCoordinate || {
+            latitude: 28.6139,
+            longitude: 77.2090,
+        }
+    );
+
+    useEffect(() => {
+        if (markerCoordinate) {
+            setMarkerPosition(markerCoordinate);
+        }
+    }, [markerCoordinate]);
+
+    const requestLocationPermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                    {
+                        title: 'Location Permission',
+                        message: 'This app needs access to your location to show your current position on the map.',
+                        buttonNeutral: 'Ask Me Later',
+                        buttonNegative: 'Cancel',
+                        buttonPositive: 'OK',
+                    }
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            } catch (err) {
+                console.warn(err);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const handleUseCurrentLocation = async () => {
+        const hasPermission = await requestLocationPermission();
+
+        if (hasPermission) {
+            Geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const newRegion = {
+                        latitude,
+                        longitude,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    };
+                    const newMarker = { latitude, longitude };
+
+                    setRegion(newRegion);
+                    setMarkerPosition(newMarker);
+
+                    if (onLocationSelect) {
+                        onLocationSelect({ latitude, longitude });
+                    }
+                },
+                (error) => {
+                    console.error('Error getting location:', error);
+                    Alert.alert('Error', 'Unable to get current location. Please try again.');
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            );
+        } else {
+            Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
+        }
+    };
+
+    const handleMarkerDragEnd = (e) => {
+        const { latitude, longitude } = e.nativeEvent.coordinate;
+        setMarkerPosition({ latitude, longitude });
+
         if (onLocationSelect) {
-            onLocationSelect({
-                latitude: 28.6139,
-                longitude: 77.2090
-            });
+            onLocationSelect({ latitude, longitude });
+        }
+    };
+
+    const handleMapPress = (e) => {
+        const { latitude, longitude } = e.nativeEvent.coordinate;
+        setMarkerPosition({ latitude, longitude });
+
+        if (onLocationSelect) {
+            onLocationSelect({ latitude, longitude });
         }
     };
 
     return (
         <View style={styles.container}>
-            <View style={styles.placeholderContainer}>
-                <Ionicons name="location" size={48} color="#00B0B5" />
-                <Text style={styles.placeholderTitle}>Map Placeholder</Text>
-                <Text style={styles.placeholderText}>
-                    Google Maps will appear here after configuration
-                </Text>
-                <Text style={styles.locationText}>{location}</Text>
+            <MapView
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
+                region={region}
+                onRegionChangeComplete={setRegion}
+                onPress={handleMapPress}
+            >
+                <Marker
+                    coordinate={markerPosition}
+                    draggable
+                    onDragEnd={handleMarkerDragEnd}
+                    title="Selected Location"
+                    description="Drag to adjust position"
+                />
+            </MapView>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleSelectLocation}
-                    activeOpacity={0.7}
-                >
-                    <Ionicons name="navigate" size={20} color="#FFFFFF" />
-                    <Text style={styles.buttonText}>Use Current Location</Text>
-                </TouchableOpacity>
-
-                <Text style={styles.infoText}>
-                    To enable maps:{'\n'}
-                    1. Add Google Maps API key{'\n'}
-                    2. Rebuild the app
-                </Text>
-            </View>
+            <TouchableOpacity
+                style={styles.currentLocationButton}
+                onPress={handleUseCurrentLocation}
+                activeOpacity={0.7}
+            >
+                <Ionicons name="navigate" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        height: 200,
-        width: '100%',
-        backgroundColor: '#F5F5F5',
-        borderBottomWidth: 1,
-        borderBottomColor: '#E0E0E0',
-    },
-    placeholderContainer: {
+        height: 250,
+        width: '90%',
+        borderRadius: 12,
+        margin: 'auto',
+        position: 'relative',
         flex: 1,
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject,
+    },
+    currentLocationButton: {
+        position: 'absolute',
+        bottom: 16,
+        right: 16,
+        backgroundColor: '#00BCD4',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
-    },
-    placeholderTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333333',
-        marginTop: 8,
-    },
-    placeholderText: {
-        fontSize: 12,
-        color: '#666666',
-        marginTop: 4,
-        textAlign: 'center',
-    },
-    locationText: {
-        fontSize: 14,
-        color: '#00B0B5',
-        fontWeight: '600',
-        marginTop: 8,
-    },
-    button: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#00B0B5',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 4,
-        marginTop: 12,
-    },
-    buttonText: {
-        color: '#FFFFFF',
-        fontSize: 14,
-        fontWeight: '600',
-        marginLeft: 8,
-    },
-    infoText: {
-        fontSize: 10,
-        color: '#999999',
-        marginTop: 12,
-        textAlign: 'center',
-        lineHeight: 14,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
 });
 
