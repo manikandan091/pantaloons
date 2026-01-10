@@ -2,9 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 
-const MenuItem = ({ icon, label, subtitle, isLast }) => {
+const MenuItem = ({ icon, label, subtitle, isLast, onPress }) => {
+    const handlePress = () => {
+        console.log('MenuItem pressed:', label);
+        console.log('onPress handler exists:', !!onPress);
+        if (onPress) {
+            onPress();
+        }
+    };
+
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.7}>
             <View style={styles.iconContainer}>
                 <Text style={styles.icon}>{icon}</Text>
             </View>

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 import MenuItem from './MenuItem';
 
-const MenuSection = ({ title, items }) => {
+const MenuSection = ({ title, items, onItemPress }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -16,11 +16,8 @@ const MenuSection = ({ title, items }) => {
                         icon={item.icon}
                         label={item.label}
                         subtitle={item.subtitle}
-                        isLast={index === items.length - 1} // Remove border for last item if logic dictates, but screenshot shows borders
-                    // Actually screenshot shows borders between items. Last item usually doesn't have it or does?
-                    // Screenshot: "GREENCARD" has no visible separator below it? Or it's the end of section.
-                    // Re-checking screenshot: "GREENCARD" line seems to be the last in that section, then OTHERS header starts.
-                    // Standard: items have separators.
+                        isLast={index === items.length - 1}
+                        onPress={() => onItemPress && onItemPress(item.label)}
                     />
                 ))}
             </View>

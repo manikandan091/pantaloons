@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screen/HomeScreen';
 import WishlistScreen from '../screen/WishlistScreen';
 import SearchScreen from '../screen/SearchScreen';
-import ProfileScreen from '../screen/ProfileScreen';
+import ProfileStackNavigator from './ProfileStackNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -93,7 +93,7 @@ const BottomTabNavigator = () => {
             />
             <Tab.Screen
                 name="Profile"
-                component={ProfileScreen}
+                component={ProfileStackNavigator}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => (
                         <Ionicons
