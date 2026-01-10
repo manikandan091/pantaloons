@@ -1,25 +1,33 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screen/HomeScreen';
 import WishlistScreen from '../screen/WishlistScreen';
-import InstoreScreen from '../screen/InstoreScreen';
 import SearchScreen from '../screen/SearchScreen';
 import ProfileScreen from '../screen/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
-const FloatingInstoreButton = ({ children, onPress }) => (
-    <View style={styles.floatingContainer}>
+import HomeIconActive from '../assets/icons/menu_active.png';
+import HomeIconInactive from '../assets/icons/menu_inactive.png';
+import WishlistIconInactive from '../assets/icons/wishlist_inactive.png';
+import SearchIconInactive from '../assets/icons/search_inactive.png';
+import ProfileIconInactive from '../assets/icons/profile_inactive.png';
+
+const TabButton = (props) => {
+    const { accessibilityState, style, children } = props;
+    const focused = accessibilityState ? accessibilityState.selected : false;
+
+    return (
         <TouchableOpacity
-            style={styles.floatingButton}
-            onPress={onPress}
-            activeOpacity={0.8}
+            {...props}
+            style={[style, styles.tabBtn]}
         >
+            {focused && <View style={styles.activeIndicator} />}
             {children}
         </TouchableOpacity>
-    </View>
-);
+    );
+};
 
 const BottomTabNavigator = () => {
     return (
@@ -27,20 +35,20 @@ const BottomTabNavigator = () => {
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: true,
-                tabBarActiveTintColor: '#009688',
-                tabBarInactiveTintColor: '#3cc6b8',
+                tabBarActiveTintColor: 'black',
+                tabBarInactiveTintColor: 'black',
                 tabBarStyle: {
-                    height: 70,
+                    height: 60,
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    borderTopColor: '#eee',
+                    borderTopColor: '#eeeeeeff',
                     elevation: 8,
-                    paddingBottom: 10,
-                    paddingTop: 10,
+                    paddingBottom: 5,
                 },
                 tabBarLabelStyle: {
                     fontSize: 10,
-                    fontWeight: 'bold',
+                    fontWeight: '100',
+                    marginBottom: 5,
                 },
             }}
         >
@@ -48,49 +56,52 @@ const BottomTabNavigator = () => {
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: 20, color, fontWeight: 'bold' }}>Home</Text>
+                    tabBarIcon: ({ focused }) => (
+                        <Image
+                            source={focused ? HomeIconActive : HomeIconInactive}
+                            style={{ width: 24, height: 24, resizeMode: 'contain', marginTop: 8 }}
+                        />
                     ),
+                    tabBarButton: (props) => <TabButton {...props} />,
                 }}
             />
             <Tab.Screen
                 name="Wishlist"
                 component={WishlistScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: 20, color, fontWeight: 'bold' }}>Wishlist</Text>
+                    tabBarIcon: ({ focused }) => (
+                        <Image
+                            source={focused ? HomeIconActive : WishlistIconInactive}
+                            style={{ width: 24, height: 24, resizeMode: 'contain', marginTop: 8 }}
+                        />
                     ),
-                }}
-            />
-            <Tab.Screen
-                name="Instore"
-                component={InstoreScreen}
-                options={{
-                    tabBarLabel: 'Instore',
-                    tabBarButton: (props) => (
-                        <FloatingInstoreButton {...props}>
-                            <Text style={styles.floatingIcon}>Instore</Text>
-                            <Text style={styles.floatingLabel}>Instore</Text>
-                        </FloatingInstoreButton>
-                    ),
+                    tabBarButton: (props) => <TabButton {...props} />,
                 }}
             />
             <Tab.Screen
                 name="Search"
                 component={SearchScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: 20, color, fontWeight: 'bold' }}>Search</Text>
+                    tabBarIcon: ({ focused }) => (
+                        <Image
+                            source={focused ? HomeIconActive : SearchIconInactive}
+                            style={{ width: 24, height: 24, resizeMode: 'contain', marginTop: 8 }}
+                        />
                     ),
+                    tabBarButton: (props) => <TabButton {...props} />,
                 }}
             />
             <Tab.Screen
                 name="Profile"
                 component={ProfileScreen}
-                options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: 20, color, fontWeight: 'bold' }}>Profile</Text>
+               options={{
+                    tabBarIcon: ({ focused }) => (
+                        <Image
+                            source={focused ? HomeIconActive : ProfileIconInactive}
+                            style={{ width: 24, height: 24, resizeMode: 'contain', marginTop: 8 }}
+                        />
                     ),
+                    tabBarButton: (props) => <TabButton {...props} />,
                 }}
             />
         </Tab.Navigator>
@@ -98,40 +109,17 @@ const BottomTabNavigator = () => {
 };
 
 const styles = StyleSheet.create({
-    floatingContainer: {
-        top: -30, 
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 10,
+    tabBtn: {
+        position: 'relative',
     },
-    floatingButton: {
-        width: 65,
-        height: 65,
-        borderRadius: 32.5,
-        backgroundColor: '#00BFA5', 
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
-        borderWidth: 4,
-        borderColor: 'white',
-    },
-    floatingIcon: {
-        fontSize: 24,
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    floatingLabel: {
+    activeIndicator: {
         position: 'absolute',
-        bottom: -25, 
-        fontSize: 10,
-        color: '#009688',
-        fontWeight: 'bold',
-        width: 60,
-        textAlign: 'center',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 3,
+        backgroundColor: '#009688',
+        width: '100%',
     },
 });
 
