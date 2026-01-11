@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
+import barcodeImage from '../../../public/images/barcode.png';
 
 const BarcodeSection = () => {
     return (
@@ -11,21 +12,7 @@ const BarcodeSection = () => {
             </View>
 
             <View style={styles.barcodeContainer}>
-                {/* CSS Barcode Placeholder - Creating visual lines of varying widths */}
-                <View style={styles.barcodeLineGroup}>
-                    {[...Array(40)].map((_, i) => (
-                        <View
-                            key={i}
-                            style={[
-                                styles.barcodeLine,
-                                {
-                                    width: Math.random() > 0.5 ? 2 : 4,
-                                    marginRight: Math.random() > 0.7 ? 3 : 1
-                                }
-                            ]}
-                        />
-                    ))}
-                </View>
+                <Image source={barcodeImage} style={styles.barcodeImage} />
             </View>
         </View>
     );
@@ -55,7 +42,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', // Centered title
         alignItems: 'center',
         position: 'relative', // To position info icon absolutely if needed, or just standard flex
-        marginBottom: SPACING.m,
+        marginBottom: SPACING.s,
     },
     title: {
         fontSize: FONT_SIZE.m,
@@ -66,12 +53,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 0,
         color: COLORS.primaryDark,
-        fontSize: 16,
+        fontSize: 18,
+        borderRadius: 12,
     },
     barcodeContainer: {
         alignItems: 'center',
-        justifyContent: 'center',
-        height: 50,
+        alignSelf: 'center',
+        height: 60,
     },
     barcodeLineGroup: {
         flexDirection: 'row',
@@ -81,7 +69,11 @@ const styles = StyleSheet.create({
     barcodeLine: {
         backgroundColor: COLORS.black,
         height: '100%',
-    }
+    },
+    barcodeImage: {
+        width: 280,
+        height: 60,
+    },
 });
 
 export default BarcodeSection;
