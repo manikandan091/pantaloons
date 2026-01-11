@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { View, ScrollView, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/common/Header';
 import MarqueeHeader from '../components/common/MarqueeHeader';
 import UserInfoSection from '../components/profile/UserInfoSection';
@@ -12,33 +13,19 @@ import { COLORS } from '../components/profile/theme';
 
 const ProfileScreen = () => {
     const navigation = useNavigation();
-    const handleMenuPress = () => {
-        console.log('Menu pressed');
+
+    const handleBackPress = () => {
+        navigation.goBack();
     };
 
     const handleCartPress = () => {
         console.log('Cart pressed');
     };
 
-    const handleSearchPress = () => {
-        console.log('Search pressed');
-    };
-
-    const handleWishlistPress = () => {
-        console.log('Wishlist pressed');
-    };
-
     const handleMenuItemPress = (label) => {
         console.log('Menu item pressed:', label);
-        console.log('Navigation object:', navigation);
-
         if (label === 'ADDRESSES') {
-            try {
-                console.log('Attempting to navigate to Address screen...');
-                navigation.navigate('Address');
-            } catch (error) {
-                console.error('Navigation error:', error);
-            }
+            navigation.navigate('Address');
         } else {
             console.log(`${label} pressed`);
         }
@@ -68,6 +55,19 @@ const ProfileScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+
+            <View style={styles.header}>
+                <View style={styles.leftHeader}>
+                    <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+                        <Ionicons name="chevron-back" size={20} color={COLORS.black} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>MY ACCOUNT</Text>
+                </View>
+                <TouchableOpacity onPress={handleCartPress} style={styles.cartButton}>
+                    <Ionicons name="cart-outline" size={22} color={COLORS.primaryDark} />
+                </TouchableOpacity>
+            </View>
+
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -98,6 +98,31 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.white,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#FFFFFF',
+    },
+    leftHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    headerTitle: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#000000',
+        marginLeft: 4,
+        letterSpacing: 1.06,
+    },
+    backButton: {
+        padding: 4,
+    },
+    cartButton: {
+        padding: 4,
     },
     scrollContent: {
         paddingBottom: 20,

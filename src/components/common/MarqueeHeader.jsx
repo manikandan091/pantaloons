@@ -5,13 +5,12 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const MarqueeHeader = ({
     text = "The SALE just got bigger & better! Flat 50% OFF* Is Now Live",
-    speed = 10
+    speed = 14
 }) => {
     const scrollX = useRef(new Animated.Value(0)).current;
     const textWidth = useRef(0);
 
     useEffect(() => {
-        // Start animation after measuring text width
         const startAnimation = () => {
             scrollX.setValue(SCREEN_WIDTH);
 

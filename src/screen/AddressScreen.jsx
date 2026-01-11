@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, StatusBar, Alert, ScrollView, TouchableOpacity, Text } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Header from '../components/common/Header';
 import MarqueeHeader from '../components/common/MarqueeHeader';
 import AddressForm from '../components/address/AddressForm';
 
@@ -34,23 +33,13 @@ const AddressScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-            <Header
-                title="PANTALOONS"
-                showBackButton={true}
-                onBackPress={handleBackPress}
-                showMenu={false}
-                showCart={false}
-                showSearch={false}
-                showWishlist={false}
-            />
-            <MarqueeHeader text="The SALE just got bigger & better! Flat 50% OFF* Is Now Live" />
 
-            {/* Addresses Header with Back Button */}
+            <MarqueeHeader text="The SALE just got bigger & better! Flat 50% OFF* Is Now Live" />
             <View style={styles.addressesHeader}>
                 <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={24} color="#000000" />
+                    <Ionicons name="chevron-back" size={20} color="#000000aa" />
                 </TouchableOpacity>
-                <Text style={styles.addressesTitle}>Addresses</Text>
+                <Text style={styles.addressesTitle}>ADDRESS</Text>
             </View>
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -75,13 +64,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: '#FFFFFF',
+        letterSpacing: 21.06,
     },
     backButton: {
         marginRight: 8,
         padding: 4,
     },
     addressesTitle: {
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: '600',
         color: '#000000',
     },
