@@ -8,15 +8,15 @@ const LogoutSection = () => {
             <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>LOGOUT</Text>
             </TouchableOpacity>
-            <Text style={styles.version}>v3.0.0</Text>
+            <Text style={styles.version}>V.3.0.0</Text>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: SPACING.l,
-        paddingBottom: SPACING.xxl * 2, // Extra padding for bottom tab bar
+        paddingHorizontal: SPACING.xxl,
+        paddingBottom: SPACING.xxl * 2,
         paddingTop: SPACING.xl,
         alignItems: 'center',
     },
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
     },
     version: {
-        color: COLORS.textSecondary,
+        color: COLORS.black,
         fontSize: FONT_SIZE.s,
     }
 });

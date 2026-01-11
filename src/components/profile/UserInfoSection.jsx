@@ -13,14 +13,14 @@ const UserInfoSection = () => {
 
                     <View style={styles.detailsContainer}>
                         <View style={styles.headerRow}>
-                            <Text style={styles.welcomeText}>Welcome, Vishnu !</Text>
+                            <Text style={styles.welcomeText}>Welcome, User !</Text>
                             <TouchableOpacity style={styles.editButton}>
                                 <Text style={styles.editIcon}>✎</Text>
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.emailText}>vishnu130104@gmail.com</Text>
-                        <Text style={styles.phoneText}>9655508958</Text>
+                        <Text style={styles.emailText}>sample@gmail.com</Text>
+                        <Text style={styles.phoneText}>9123456789</Text>
                     </View>
                 </View>
 

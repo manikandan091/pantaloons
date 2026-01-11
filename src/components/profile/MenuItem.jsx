@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 
-const MenuItem = ({ icon, label, subtitle, isLast, onPress }) => {
+const MenuItem = ({ icon, label, subtitle, isLast, onPress, variant = 'default' }) => {
     const handlePress = () => {
         console.log('MenuItem pressed:', label);
         console.log('onPress handler exists:', !!onPress);
@@ -11,46 +12,52 @@ const MenuItem = ({ icon, label, subtitle, isLast, onPress }) => {
         }
     };
 
+    const isOthers = variant === 'others';
+
     return (
         <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.7}>
-            <View style={styles.iconContainer}>
-                <Text style={styles.icon}>{icon}</Text>
-            </View>
-            <View style={[styles.contentContainer, isLast && styles.noBorder]}>
-                <View style={styles.textContainer}>
-                    <Text style={styles.label}>{label}</Text>
-                    {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+            <View style={styles.innerRow}>
+                {!isOthers && (
+                    <View style={styles.iconContainer}>
+                        <MaterialIcons name={icon} size={19} color={COLORS.textSecondary} />
+                    </View>
+                )}
+                <View style={styles.contentContainer}>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.label}>{label}</Text>
+                        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+                    </View>
                 </View>
             </View>
+            {(!isOthers && !isLast) && <View style={styles.separator} />}
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: COLORS.white,
+    },
+    innerRow: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingLeft: SPACING.l,
-        backgroundColor: COLORS.white,
+    },
+    separator: {
+        height: 0.75,
+        backgroundColor: COLORS.borderColor,
+        marginHorizontal: SPACING.l,
     },
     iconContainer: {
-        marginRight: SPACING.l,
+        marginRight: SPACING.xl,
         width: 24,
         alignItems: 'center',
     },
-    icon: {
-        fontSize: 18,
-        color: COLORS.textSecondary,
-    },
+
     contentContainer: {
         flex: 1,
         paddingVertical: SPACING.l,
-        borderBottomWidth: 1,
-        borderBottomColor: COLORS.borderColor,
         paddingRight: SPACING.l,
-    },
-    noBorder: {
-        borderBottomWidth: 0,
     },
     textContainer: {
         justifyContent: 'center',
@@ -58,16 +65,16 @@ const styles = StyleSheet.create({
     label: {
         fontSize: FONT_SIZE.m,
         color: COLORS.textPrimary,
-        fontWeight: '500',
+        fontWeight: 'bold',
         marginBottom: 2,
-        textTransform: 'uppercase', // Section headers usually, but items here are uppercase in screenshot?
-        // Looking at screenshot: "MY ORDERS", "WISHLIST" are uppercase. "Find order updates..." is mixed.
-        // Actually the items titles are uppercase.
+        textTransform: 'uppercase',
+        letterSpacing: 1.23,
     },
     subtitle: {
-        fontSize: FONT_SIZE.xs,
-        color: COLORS.textSecondary,
+        fontSize: FONT_SIZE.s,
+        color: "#6f7070",
         marginTop: 2,
+        letterSpacing: 1.06,
     },
 });
 

@@ -1,15 +1,15 @@
 export const COLORS = {
-    primary: '#00BFA5', // Teal/Aqua main color
-    primaryDark: '#009688',
+    primary: '#00b0b5',
+    primaryDark: '#01afb5',
     background: '#F5F5F5',
     white: '#FFFFFF',
     textPrimary: '#212121',
     textSecondary: '#757575',
-    borderColor: '#EEEEEE',
+    borderColor: '#757575',
     black: '#000000',
     lightGray: '#FAFAFA',
     divider: '#E0E0E0',
-    gold: '#FFD700', // For stars/tiers
+    gold: '#FFD700',
 };
 
 export const SPACING = {
@@ -32,7 +32,7 @@ export const FONT_SIZE = {
 };
 
 export const FONTS = {
-    regular: 'System', // Use default system font
-    bold: 'System',
-    light: 'System',
+    regular: 'Figtree',
+    bold: 'Figtree',
+    light: 'Figtree',
 };

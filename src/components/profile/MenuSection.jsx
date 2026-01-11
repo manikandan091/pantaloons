@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 import MenuItem from './MenuItem';
 
-const MenuSection = ({ title, items, onItemPress }) => {
+const MenuSection = ({ title, items, onItemPress, variant = 'default' }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -17,6 +17,7 @@ const MenuSection = ({ title, items, onItemPress }) => {
                         label={item.label}
                         subtitle={item.subtitle}
                         isLast={index === items.length - 1}
+                        variant={variant}
                         onPress={() => onItemPress && onItemPress(item.label)}
                     />
                 ))}
@@ -31,21 +32,19 @@ const styles = StyleSheet.create({
     },
     header: {
         paddingHorizontal: SPACING.l,
-        paddingVertical: SPACING.m,
-        backgroundColor: '#EEEEEE', // Slightly darker header bg for section
-        // Screenshot shows the section header background is just gray/white or maybe specific gray strip
-        // Screenshot: "MY PROFILE" text is on a gray strip? No, looks like just text on white/gray bg.
-        // Let's assume light gray strip.
-        backgroundColor: '#F0F0F0',
+        paddingVertical: SPACING.s,
+        backgroundColor: '#F2F2F2',
+        letterSpacing: 0.35,
     },
     title: {
-        fontSize: FONT_SIZE.s,
-        fontWeight: 'bold',
-        color: COLORS.textPrimary,
+        fontSize: FONT_SIZE.m,
+        fontWeight: 700,
+        color: COLORS.black,
         textTransform: 'uppercase',
     },
     listContainer: {
         backgroundColor: COLORS.white,
+        paddingVertical: SPACING.m,
     }
 });
 

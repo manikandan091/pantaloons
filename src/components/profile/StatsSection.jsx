@@ -1,4 +1,5 @@
 import React from 'react';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { View, Text, StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZE } from './theme';
 
@@ -6,18 +7,16 @@ const StatsSection = () => {
     return (
         <View style={styles.container}>
             <View style={styles.statItem}>
-                <Text style={styles.icon}>🏆</Text>
-                <Text style={styles.label}>Your are{'\n'}Tier 0 member</Text>
+                <Icon name="trophy-outline" size={24} style={styles.icon} />
+                <Text style={styles.label}>Your are{'\n'}<Text style={styles.bold}>Tier 0 member</Text></Text>
             </View>
-            <View style={styles.separator} />
             <View style={styles.statItem}>
-                <Text style={styles.icon}>👛</Text>
-                <Text style={styles.label}>Spend ₹1{'\n'}to upgrade tier</Text>
+                <Icon name="wallet-outline" size={24} style={styles.icon} />
+                <Text style={styles.label}>Spend <Text style={styles.bold}>₹1</Text>{'\n'}to upgrade tier</Text>
             </View>
-            <View style={styles.separator} />
             <View style={styles.statItem}>
-                <Text style={styles.icon}>⭐</Text>
-                <Text style={styles.label}>My points{'\n'}0</Text>
+                <Icon name="star-outline" size={24} style={styles.icon} />
+                <Text style={styles.label}>My points{'\n'}<Text style={styles.bold}>0</Text></Text>
             </View>
         </View>
     );
@@ -26,10 +25,10 @@ const StatsSection = () => {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        backgroundColor: '#F5F5F5', // Light gray background
+        backgroundColor: '#F2F2F2',
         marginHorizontal: SPACING.l,
         borderRadius: 12,
-        paddingVertical: SPACING.l,
+        padding: SPACING.m,
         marginBottom: SPACING.xl,
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -45,15 +44,15 @@ const styles = StyleSheet.create({
         color: COLORS.textSecondary,
     },
     label: {
-        fontSize: FONT_SIZE.xs,
+        fontSize: FONT_SIZE.s,
         textAlign: 'center',
         color: COLORS.textPrimary,
         lineHeight: 16,
+        letterSpacing: 0.26,
     },
-    separator: {
-        width: 1,
-        height: '80%',
-        backgroundColor: COLORS.borderColor,
+    bold: {
+        fontWeight: 'bold',
+        color: COLORS.black,
     }
 });
 

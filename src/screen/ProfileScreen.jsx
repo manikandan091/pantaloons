@@ -45,15 +45,15 @@ const ProfileScreen = () => {
     };
 
     const myProfileItems = [
-        { label: 'MY ORDERS', subtitle: 'Find order updates, return & cancellation', icon: '📦' },
-        { label: 'WISHLIST', subtitle: 'Save & view your favourites here', icon: '♡' },
-        { label: 'SAVED CARD', subtitle: 'Securely stored card for easy online payments', icon: '💳' },
-        { label: 'CUSTOMER SUPPORT', subtitle: 'Contact us & Store locator', icon: '🎧' },
-        { label: 'E-BILLS', subtitle: 'Find your digital invoices', icon: '📄' },
-        { label: 'ADDRESSES', subtitle: 'Edit & Add new addresses', icon: '📍' },
-        { label: 'PANTALOONS CREDITS', subtitle: 'Check your Pantaloons Credit', icon: '💳' },
-        { label: 'PT GIFT CARD', subtitle: 'Buy or check your Giftcard', icon: '🎁' },
-        { label: 'GREENCARD', subtitle: 'Check your Greencard points', icon: '💳' },
+        { label: 'MY ORDERS', subtitle: 'Find order updates, return & cancellation', icon: 'local-shipping' },
+        { label: 'WISHLIST', subtitle: 'Save & view your favourites here', icon: 'favorite-border' },
+        { label: 'SAVED CARD', subtitle: 'Securely stored card for easy online payments', icon: 'credit-card' },
+        { label: 'CUSTOMER SUPPORT', subtitle: 'Contact us & Store locator', icon: 'headset-mic' },
+        { label: 'E-BILLS', subtitle: 'Find your digital invoices', icon: 'receipt' },
+        { label: 'ADDRESSES', subtitle: 'Edit & Add new addresses', icon: 'location-on' },
+        { label: 'PANTALOONS CREDITS', subtitle: 'Check your Pantaloons Credit', icon: 'account-balance-wallet' },
+        { label: 'PT GIFT CARD', subtitle: 'Buy or check your Giftcard', icon: 'card-giftcard' },
+        { label: 'GREENCARD', subtitle: 'Check your Greencard points', icon: 'stars' },
     ];
 
     const othersItems = [
@@ -68,18 +68,6 @@ const ProfileScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
-            <Header
-                title="PANTALOONS"
-                showMenu={true}
-                onMenuPress={handleMenuPress}
-                showCart={true}
-                onCartPress={handleCartPress}
-                showSearch={true}
-                onSearchPress={handleSearchPress}
-                showWishlist={true}
-                onWishlistPress={handleWishlistPress}
-            />
-            <MarqueeHeader text="The SALE just got bigger & better! Flat 50% OFF* Is Now Live" />
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -97,6 +85,7 @@ const ProfileScreen = () => {
                     title="OTHERS"
                     items={othersItems}
                     onItemPress={handleMenuItemPress}
+                    variant="others"
                 />
 
                 <LogoutSection />
