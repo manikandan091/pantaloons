@@ -17,7 +17,6 @@ const Header = ({
 }) => {
     return (
         <View style={styles.container}>
-            {/* Left Side - Menu or Back Button */}
             <View style={styles.leftSection}>
                 {showBackButton ? (
                     <TouchableOpacity
@@ -40,12 +39,10 @@ const Header = ({
                 )}
             </View>
 
-            {/* Center - Logo/Title */}
             <View style={styles.centerSection}>
                 <Text style={styles.logo}>{title}</Text>
             </View>
 
-            {/* Right Side - Action Icons */}
             <View style={styles.rightSection}>
                 {showWishlist && (
                     <TouchableOpacity
@@ -102,8 +99,6 @@ const styles = StyleSheet.create({
     },
     centerSection: {
         flex: 2,
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
     rightSection: {
         flex: 1,

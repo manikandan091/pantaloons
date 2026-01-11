@@ -6,14 +6,12 @@ const ProfileHeader = () => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.iconButton}>
-                {/* Placeholder for Back Arrow */}
                 <Text style={styles.iconText}>{'<'}</Text>
             </TouchableOpacity>
 
             <Text style={styles.title}>MY ACCOUNT</Text>
 
             <TouchableOpacity style={styles.iconButton}>
-                {/* Placeholder for Cart Icon */}
                 <Text style={styles.iconText}>🛒</Text>
             </TouchableOpacity>
         </View>
@@ -42,7 +40,7 @@ const styles = StyleSheet.create({
     },
     iconText: {
         fontSize: 20,
-        color: COLORS.primaryDark, // Using primary color for icons for now
+        color: COLORS.primaryDark,
     },
 });
 

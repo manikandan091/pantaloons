@@ -11,7 +11,6 @@ const MarqueeHeader = ({
     const textWidth = useRef(0);
 
     useEffect(() => {
-        // Start animation after measuring text width
         const startAnimation = () => {
             scrollX.setValue(SCREEN_WIDTH);
 
@@ -24,7 +23,6 @@ const MarqueeHeader = ({
             ).start();
         };
 
-        // Small delay to ensure text is measured
         const timer = setTimeout(startAnimation, 100);
         return () => clearTimeout(timer);
     }, [text, speed]);

@@ -84,6 +84,23 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        // Load .env file
+        def envFile = rootProject.file("../.env")
+        def googleMapsApiKey = ""
+        if (envFile.exists()) {
+            envFile.eachLine { line ->
+                if (line.trim().startsWith("GOOGLE_MAP_API_KEY=")) {
+                    googleMapsApiKey = line.trim().split("=")[1]
+                }
+            }
+        }
+        
+        if (googleMapsApiKey.isEmpty()) {
+            println "WARNING: GOOGLE_MAP_API_KEY not found in .env file"
+        }
+
+        manifestPlaceholders = [GOOGLE_MAPS_API_KEY: googleMapsApiKey]
     }
     signingConfigs {
         debug {

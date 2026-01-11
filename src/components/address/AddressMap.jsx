@@ -28,6 +28,11 @@ const AddressMap = ({
     useEffect(() => {
         if (markerCoordinate) {
             setMarkerPosition(markerCoordinate);
+            setRegion(prev => ({
+                ...prev,
+                latitude: markerCoordinate.latitude,
+                longitude: markerCoordinate.longitude,
+            }));
         }
     }, [markerCoordinate]);
 
@@ -77,9 +82,14 @@ const AddressMap = ({
                 },
                 (error) => {
                     console.error('Error getting location:', error);
-                    Alert.alert('Error', 'Unable to get current location. Please try again.');
+                    let errorMessage = 'Unable to get current location. Please try again.';
+                    if (error.code === 1) errorMessage = 'Location permission denied.';
+                    if (error.code === 2) errorMessage = 'Location provider unavailable. Make sure GPS is on.';
+                    if (error.code === 3) errorMessage = 'Location request timed out. Please try again.';
+
+                    Alert.alert('Location Error', errorMessage + `\n(Dev info: ${error.message})`);
                 },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                { enableHighAccuracy: false, timeout: 30000, maximumAge: 10000 }
             );
         } else {
             Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
@@ -135,12 +145,11 @@ const AddressMap = ({
 
 const styles = StyleSheet.create({
     container: {
-        height: 250,
-        width: '90%',
+        height: 300,
+        width: '100%',
         borderRadius: 12,
-        margin: 'auto',
+        overflow: 'hidden',
         position: 'relative',
-        flex: 1,
     },
     map: {
         ...StyleSheet.absoluteFillObject,

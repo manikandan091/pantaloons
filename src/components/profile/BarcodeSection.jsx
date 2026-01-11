@@ -25,9 +25,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: SPACING.m,
         borderWidth: 1,
-        borderColor: COLORS.primary, // Teal border as shown
+        borderColor: COLORS.primary,
         marginBottom: SPACING.m,
-        // Shadow for elevation
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -39,9 +38,9 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'center', // Centered title
+        justifyContent: 'center', 
         alignItems: 'center',
-        position: 'relative', // To position info icon absolutely if needed, or just standard flex
+        position: 'relative',
         marginBottom: SPACING.s,
     },
     title: {
