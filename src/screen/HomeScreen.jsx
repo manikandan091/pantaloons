@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Header title="Home" />
+      <Header/>
       <MarqueeHeader />
       <View style={styles.container}>
         <Text style={styles.text}>Home Screen</Text>

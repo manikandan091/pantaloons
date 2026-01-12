@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, StyleSheet, StatusBar, TouchableOpacity, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Header from '../components/common/Header';
-import MarqueeHeader from '../components/common/MarqueeHeader';
 import UserInfoSection from '../components/profile/UserInfoSection';
 import BarcodeSection from '../components/profile/BarcodeSection';
 import StatsSection from '../components/profile/StatsSection';
@@ -44,12 +43,12 @@ const ProfileScreen = () => {
     ];
 
     const othersItems = [
-        { label: 'REFER A FRIEND', icon: '' },
-        { label: 'SETTINGS', icon: '' },
-        { label: 'FAQ', icon: '' },
-        { label: 'ABOUT PANTALOONS', icon: '' },
-        { label: 'PRIVACY POLICY', icon: '' },
-        { label: 'TERMS OF USE', icon: '' },
+        { label: 'REFER A FRIEND'},
+        { label: 'SETTINGS'},
+        { label: 'FAQ'},
+        { label: 'ABOUT PANTALOONS'},
+        { label: 'PRIVACY POLICY'},
+        { label: 'TERMS OF USE'},
     ];
 
     return (

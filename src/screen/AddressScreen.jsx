@@ -70,12 +70,12 @@ const AddressScreen = ({ navigation }) => {
         let updatedAddresses;
 
         if (formData.id) {
-            // Update existing address
+
             updatedAddresses = addresses.map(addr =>
                 addr.id === formData.id ? { ...addr, ...formData } : addr
             );
         } else {
-            // Add new address
+
             const newAddress = {
                 id: Date.now().toString(),
                 ...formData,

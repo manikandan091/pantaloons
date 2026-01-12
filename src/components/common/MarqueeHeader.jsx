@@ -23,10 +23,10 @@ const MarqueeHeader = ({
             ).start();
         };
 
-        // Small delay to ensure text is measured
         const timer = setTimeout(startAnimation, 100);
+
         return () => clearTimeout(timer);
-    }, [text, speed]);
+    }, [text, speed, scrollX]);
 
     const onTextLayout = (event) => {
         textWidth.current = event.nativeEvent.layout.width;

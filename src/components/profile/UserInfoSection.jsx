@@ -6,7 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const UserInfoSection = () => {
     return (
         <View style={styles.container}>
-            {/* Background Animations */}
+
             <Image
                 source={require('../../../public/images/animateImage1.png')}
                 style={styles.animateImage1}
@@ -17,11 +17,10 @@ const UserInfoSection = () => {
             />
 
             <View style={styles.cardContainer}>
-                {/* Top Section with Background Image */}
+
                 <ImageBackground
                     source={require('../../../public/images/profile_background.png')}
                     style={styles.topSectionBackground}
-                    imageStyle={styles.topSectionImageStyle}
                 >
                     <View style={styles.topContent}>
                         <View style={styles.avatarWrapper}>
@@ -73,8 +72,6 @@ const styles = StyleSheet.create({
         left: -50,
         width: 200,
         height: 200,
-        resizeMode: 'contain',
-        opacity: 0.8,
     },
     animateImage2: {
         position: 'absolute',
@@ -82,8 +79,6 @@ const styles = StyleSheet.create({
         right: -60,
         width: 150,
         height: 150,
-        resizeMode: 'contain',
-        opacity: 0.8,
     },
     cardContainer: {
         backgroundColor: COLORS.white,
@@ -93,9 +88,6 @@ const styles = StyleSheet.create({
     },
     topSectionBackground: {
         width: '100%',
-    },
-    topSectionImageStyle: {
-        resizeMode: 'cover',
     },
     topContent: {
         padding: SPACING.l,
