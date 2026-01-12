@@ -122,6 +122,7 @@ const AddressMap = ({
                 region={region}
                 onRegionChangeComplete={setRegion}
                 onPress={handleMapPress}
+                zoomControlEnabled
             >
                 <Marker
                     coordinate={markerPosition}
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     map: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
     },
     currentLocationButton: {
         position: 'absolute',

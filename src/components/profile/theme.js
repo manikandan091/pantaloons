@@ -5,7 +5,7 @@ export const COLORS = {
     white: '#FFFFFF',
     textPrimary: '#212121',
     textSecondary: '#757575',
-    borderColor: '#757575',
+    borderColor: '#aaaaaaff',
     black: '#000000',
     lightGray: '#FAFAFA',
     divider: '#E0E0E0',

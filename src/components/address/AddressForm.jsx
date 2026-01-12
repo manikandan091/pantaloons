@@ -11,28 +11,26 @@ import {
     Modal,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { fetchLocationByPincode, isValidPincode } from '../../utils/pincodeService';
-import { reverseGeocode, forwardGeocode } from '../../utils/geocodingService';
 import AddressMap from './AddressMap';
-import { GOOGLE_MAP_API_KEY } from '@env';
 
-const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
+const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        mobileNumber: '',
-        address: '',
-        houseNo: '',
-        streetName: '',
-        area: '',
-        landmark: '',
-        pincode: '',
-        city: '',
-        state: '',
-        latitude: '',
-        longitude: '',
-        addressType: 'Home',
-        isDefault: false,
+        firstName: initialData?.firstName || '',
+        lastName: initialData?.lastName || '',
+        mobileNumber: initialData?.mobileNumber || '',
+        address: initialData?.address || '',
+        houseNo: initialData?.houseNo || '',
+        streetName: initialData?.streetName || '',
+        area: initialData?.area || '',
+        landmark: initialData?.landmark || '',
+        pincode: initialData?.pincode || '',
+        city: initialData?.city || '',
+        state: initialData?.state || '',
+        latitude: initialData?.latitude || '',
+        longitude: initialData?.longitude || '',
+        addressType: (initialData?.addressType === 'Home' || initialData?.addressType === 'Office' || !initialData?.addressType) ? (initialData?.addressType || 'Home') : 'Others',
+        customAddressType: (initialData?.addressType === 'Home' || initialData?.addressType === 'Office' || !initialData?.addressType) ? '' : (initialData?.addressType || ''),
+        isDefault: initialData?.isDefault || false,
     });
 
     const [errors, setErrors] = useState({});
@@ -43,48 +41,14 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         if (errors[field]) {
+
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
     };
 
-    const handlePincodeChange = async (value) => {
-        const numericValue = value.replace(/[^0-9]/g, '');
-        handleInputChange('pincode', numericValue);
-        if (numericValue.length === 6) {
-            setPincodeLoading(true);
-            try {
-                const location = await fetchLocationByPincode(numericValue);
-                if (location) {
-                    setFormData(prev => ({
-                        ...prev,
-                        city: location.city,
-                        state: location.state,
-                    }));
-                    setErrors(prev => ({ ...prev, pincode: '' }));
-                } else {
-                    setErrors(prev => ({
-                        ...prev,
-                        pincode: 'Invalid pincode. Please check and try again.'
-                    }));
-                    setFormData(prev => ({ ...prev, city: '', state: '' }));
-                }
-            } catch (error) {
-                setErrors(prev => ({ ...prev, pincode: error.message }));
-                setFormData(prev => ({ ...prev, city: '', state: '' }));
-            } finally {
-                setPincodeLoading(false);
-            }
-        } else if (numericValue.length < 6) {
-            setFormData(prev => ({ ...prev, city: '', state: '' }));
-        }
-    };
+  
 
-    const handlePhoneChange = (value) => {
-        const numericValue = value.replace(/[^0-9]/g, '');
-        if (numericValue.length <= 10) {
-            handleInputChange('mobileNumber', numericValue);
-        }
-    };
+   
 
     const validateForm = () => {
         const newErrors = {};
@@ -117,7 +81,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
 
         if (!formData.pincode) {
             newErrors.pincode = 'Pincode is required';
-        } else if (!isValidPincode(formData.pincode)) {
+        } else if (!formData.pincode) {
             newErrors.pincode = 'Please enter a valid 6-digit pincode';
         }
 
@@ -129,6 +93,10 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
             newErrors.state = 'State is required';
         }
 
+        if (formData.addressType === 'Others' && !formData.customAddressType.trim()) {
+            newErrors.customAddressType = 'Please specify the address type';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -136,11 +104,17 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
     const handleSubmit = () => {
         if (validateForm()) {
             setLoading(true);
-            // Simulate API call
             setTimeout(() => {
+
                 setLoading(false);
                 if (onSubmit) {
-                    onSubmit(formData);
+                    const finalData = { ...formData };
+                    if (finalData.addressType === 'Others') {
+                        finalData.addressType = finalData.customAddressType;
+                    }
+                    delete finalData.customAddressType;
+
+                    onSubmit(initialData?.id ? { ...finalData, id: initialData.id } : finalData);
                 }
             }, 1000);
         }
@@ -150,17 +124,19 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.formContent}>
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Contact Details</Text>
+
+                    <Text style={styles.sectionTitle}>{initialData?.id ? 'EDIT ADDRESS' : 'ADD ADDRESS'}</Text>
                     <TouchableOpacity onPress={onBack} style={styles.closeButton}>
                         <Ionicons name="close" size={24} color="#000000" />
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>First name*</Text>
                     <TextInput
                         style={[styles.input, errors.firstName && styles.inputError]}
-                        placeholder="Mani"
+                        placeholder="John"
                         value={formData.firstName}
                         onChangeText={(value) => handleInputChange('firstName', value)}
                         placeholderTextColor="#999999"
@@ -169,10 +145,11 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Last name</Text>
                     <TextInput
                         style={[styles.input, errors.lastName && styles.inputError]}
-                        placeholder="M"
+                        placeholder="Doe"
                         value={formData.lastName}
                         onChangeText={(value) => handleInputChange('lastName', value)}
                         placeholderTextColor="#999999"
@@ -181,10 +158,11 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Mobile number*</Text>
                     <TextInput
                         style={[styles.input, errors.mobileNumber && styles.inputError]}
-                        placeholder="7395851198"
+                        placeholder="9123456789"
                         value={formData.mobileNumber}
                         onChangeText={handlePhoneChange}
                         keyboardType="phone-pad"
@@ -195,6 +173,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 <TouchableOpacity
+
                     style={styles.checkboxContainer}
                     onPress={() => setShowMap(!showMap)}
                     activeOpacity={0.7}
@@ -208,44 +187,17 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </TouchableOpacity>
 
                 {showMap && (
-                    <View style={styles.mapContainer}>
+
+                   <View style={styles.mapContainer}>
                         <AddressMap
-                            onLocationSelect={async (coordinate) => {
+                            onMapTouchStart={() => setMainScrollEnabled(false)}
+                            onMapTouchEnd={() => setMainScrollEnabled(true)}
+                            onLocationSelect={(coordinate) => {
                                 setFormData(prev => ({
                                     ...prev,
                                     latitude: coordinate.latitude.toFixed(6),
                                     longitude: coordinate.longitude.toFixed(6),
                                 }));
-
-                                try {
-                                    setLoading(true); 
-                                    const apiKey = {key: GOOGLE_MAP_API_KEY};
-                                    const addressDetails = await reverseGeocode(
-                                        coordinate.latitude,
-                                        coordinate.longitude,
-                                        apiKey
-                                    );
-
-                                    if (addressDetails) {
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            houseNo: addressDetails.houseNo || prev.houseNo,
-                                            streetName: addressDetails.streetName || prev.streetName,
-                                            area: addressDetails.area || prev.area,
-                                            city: addressDetails.city || prev.city,
-                                            state: addressDetails.state || prev.state,
-                                            pincode: addressDetails.pincode || prev.pincode,
-                                            landmark: addressDetails.landmark || prev.landmark,
-                                            address: addressDetails.fullAddress || prev.address,
-                                            latitude: coordinate.latitude, 
-                                            longitude: coordinate.longitude,
-                                        }));
-                                    }
-                                } catch (error) {
-                                    console.error('Geocoding error:', error);
-                                } finally {
-                                    setLoading(false);
-                                }
                             }}
                             markerCoordinate={
                                 formData.latitude && formData.longitude
@@ -260,6 +212,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 )}
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Address</Text>
                     <TextInput
                         style={[styles.input]}
@@ -271,6 +224,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>House no/Building name*</Text>
                     <TextInput
                         style={[styles.input, errors.houseNo && styles.inputError]}
@@ -283,6 +237,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Street name</Text>
                     <TextInput
                         style={[styles.input, errors.streetName && styles.inputError]}
@@ -295,6 +250,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Area</Text>
                     <TextInput
                         style={[styles.input, errors.area && styles.inputError]}
@@ -307,6 +263,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Landmark</Text>
                     <TextInput
                         style={styles.input}
@@ -316,14 +273,15 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                         placeholderTextColor="#999999"
                     />
                 </View>
+
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Pincode*</Text>
                     <View style={styles.inputWithLoader}>
                         <TextInput
                             style={[styles.input, errors.pincode && styles.inputError]}
                             placeholder=""
                             value={formData.pincode}
-                            onChangeText={handlePincodeChange}
                             keyboardType="numeric"
                             maxLength={6}
                             placeholderTextColor="#999999"
@@ -339,37 +297,19 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
                 </View>
 
-                <View style={styles.fieldContainer}>
+               <View style={styles.fieldContainer}>
                     <Text style={styles.label}>City/District*</Text>
                     <TextInput
                         style={[styles.input]}
                         placeholder=""
                         value={formData.city}
                         onChangeText={(value) => handleInputChange('city', value)}
-                        onBlur={async () => {
-                            if (formData.city.length > 2) {
-                                try {
-                                    const apiKey = {key: GOOGLE_MAP_API_KEY};
-                                    const result = await forwardGeocode(formData.city, apiKey);
-                                    if (result) {
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            latitude: result.latitude.toFixed(6),
-                                            longitude: result.longitude.toFixed(6),
-                                            // Optional: auto-fill state if returned
-                                            state: result.state || prev.state
-                                        }));
-                                    }
-                                } catch (error) {
-                                    console.error('Forward geocoding error:', error);
-                                }
-                            }
-                        }}
                         placeholderTextColor="#999999"
                     />
                 </View>
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>State*</Text>
                     <TextInput
                         style={[styles.input]}
@@ -381,6 +321,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 </View>
 
                 {formData.latitude !== '' && (
+
                     <View style={styles.fieldContainer}>
                         <Text style={styles.label}>Latitude</Text>
                         <TextInput
@@ -393,6 +334,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 )}
 
                 {formData.longitude !== '' && (
+
                     <View style={styles.fieldContainer}>
                         <Text style={styles.label}>Longitude</Text>
                         <TextInput
@@ -405,6 +347,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                 )}
 
                 <View style={styles.fieldContainer}>
+
                     <Text style={styles.label}>Address Type</Text>
                     <View style={styles.addressTypeContainer}>
                         {['Home', 'Office', 'Others'].map((type) => (
@@ -430,7 +373,22 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     </View>
                 </View>
 
+                {formData.addressType === 'Others' && (
+
+                    <View style={styles.fieldContainer}>
+                        <TextInput
+                            style={[styles.input, errors.customAddressType && styles.inputError]}
+                            placeholder="e.g. Gym, Friend's house"
+                            value={formData.customAddressType}
+                            onChangeText={(value) => handleInputChange('customAddressType', value)}
+                            placeholderTextColor="#999999"
+                        />
+                        {errors.customAddressType && <Text style={styles.errorText}>{errors.customAddressType}</Text>}
+                    </View>
+                )}
+
                 <TouchableOpacity
+
                     style={styles.checkboxContainer}
                     onPress={() => handleInputChange('isDefault', !formData.isDefault)}
                     activeOpacity={0.7}
@@ -442,7 +400,9 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     </View>
                     <Text style={styles.checkboxLabel}>Make this as default address</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
+
                     style={[styles.submitButton, loading && styles.submitButtonDisabled]}
                     onPress={handleSubmit}
                     disabled={loading}
@@ -451,7 +411,9 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     {loading ? (
                         <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
-                        <Text style={styles.submitButtonText}>SHIP TO THIS ADDRESS</Text>
+                        <Text style={styles.submitButtonText}>
+                            {initialData?.id ? 'SAVE ADDRESS' : 'ADD ADDRESS'}
+                        </Text>
                     )}
                 </TouchableOpacity>
             </View>
@@ -486,9 +448,10 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     sectionTitle: {
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: '700',
         color: '#000000',
+        textAlign: 'center',
     },
     fieldContainer: {
         marginBottom: 16,
@@ -587,9 +550,9 @@ const styles = StyleSheet.create({
         color: '#000000',
     },
     submitButton: {
-        backgroundColor: '#00BCD4',
+        backgroundColor: '#00A1A5',
         paddingVertical: 14,
-        borderRadius: 6,
+        borderRadius: 24,
         alignItems: 'center',
         marginTop: 8,
         marginBottom: 24,
@@ -601,7 +564,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 15,
         fontWeight: '700',
-        letterSpacing: 0.5,
+        letterSpacing: 2.33,
     },
 });
 

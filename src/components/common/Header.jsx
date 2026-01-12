@@ -1,76 +1,42 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { COLORS } from '../profile/theme';
 
 const Header = ({
-    title = 'PANTALOONS',
-    showBackButton = false,
-    onBackPress,
-    showMenu = true,
     onMenuPress,
-    showCart = true,
-    showSearch = true,
-    showWishlist = true,
+    onNotificationPress,
     onCartPress,
-    onSearchPress,
-    onWishlistPress,
 }) => {
     return (
         <View style={styles.container}>
             <View style={styles.leftSection}>
-                {showBackButton ? (
-                    <TouchableOpacity
-                        style={styles.iconButton}
-                        onPress={onBackPress}
-                        activeOpacity={0.7}
-                    >
-                        <Ionicons name="arrow-back" size={24} color="#000000" />
-                    </TouchableOpacity>
-                ) : showMenu ? (
-                    <TouchableOpacity
-                        style={styles.iconButton}
-                        onPress={onMenuPress}
-                        activeOpacity={0.7}
-                    >
-                        <Ionicons name="menu" size={28} color="#000000" />
-                    </TouchableOpacity>
-                ) : (
-                    <View style={styles.iconButton} />
-                )}
+                <TouchableOpacity
+                    style={styles.hamburgerButton}
+                    onPress={onMenuPress}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons name="menu" size={28} color="#000000" />
+                </TouchableOpacity>
+                <Image
+                    source={require('../../../public/images/logo.png')}
+                    style={styles.logoImage}
+                    resizeMode="contain"
+                />
             </View>
-
-            <View style={styles.centerSection}>
-                <Text style={styles.logo}>{title}</Text>
-            </View>
-
             <View style={styles.rightSection}>
-                {showWishlist && (
-                    <TouchableOpacity
-                        style={styles.iconButton}
-                        onPress={onWishlistPress}
-                        activeOpacity={0.7}
-                    >
-                        <Ionicons name="heart-outline" size={24} color="#000000" />
-                    </TouchableOpacity>
-                )}
-                {showSearch && (
-                    <TouchableOpacity
-                        style={styles.iconButton}
-                        onPress={onSearchPress}
-                        activeOpacity={0.7}
-                    >
-                        <Ionicons name="search-outline" size={24} color="#000000" />
-                    </TouchableOpacity>
-                )}
-                {showCart && (
-                    <TouchableOpacity
-                        style={styles.iconButton}
-                        onPress={onCartPress}
-                        activeOpacity={0.7}
-                    >
-                        <Ionicons name="bag-outline" size={24} color="#000000" />
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={onNotificationPress}
+                >
+                    <Ionicons name="notifications-outline" size={24} color={COLORS.primaryDark} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={onCartPress}
+                >
+                    <Ionicons name="cart-outline" size={24} color={COLORS.primaryDark} />
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -81,40 +47,29 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        height: 56,
+        height: 50,
         backgroundColor: '#FFFFFF',
-        paddingHorizontal: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#E0E0E0',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        paddingHorizontal: 8,
     },
     leftSection: {
-        flex: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        alignItems: 'center',
     },
-    centerSection: {
-        flex: 2,
+    hamburgerButton: {
+        padding: 4,
+        marginRight: 12,
+    },
+    logoImage: {
+        width: 140,
+        height: 45,
     },
     rightSection: {
-        flex: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-end',
         alignItems: 'center',
     },
     iconButton: {
-        padding: 8,
-        marginHorizontal: 2,
-    },
-    logo: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#00B0B5',
-        letterSpacing: 1.5, 
+        padding: 4,
+        marginLeft: 4,
     },
 });
 

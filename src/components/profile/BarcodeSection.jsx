@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.primary,
         marginBottom: SPACING.m,
         shadowColor: "#000",
+
         shadowOffset: {
             width: 0,
             height: 2,
@@ -38,11 +39,12 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'center', 
+        justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
         marginBottom: SPACING.s,
     },
+
     title: {
         fontSize: FONT_SIZE.m,
         fontWeight: 'bold',

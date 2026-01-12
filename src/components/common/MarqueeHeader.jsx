@@ -5,7 +5,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const MarqueeHeader = ({
     text = "The SALE just got bigger & better! Flat 50% OFF* Is Now Live",
-    speed = 10
+    speed = 14
 }) => {
     const scrollX = useRef(new Animated.Value(0)).current;
     const textWidth = useRef(0);
@@ -24,8 +24,9 @@ const MarqueeHeader = ({
         };
 
         const timer = setTimeout(startAnimation, 100);
+
         return () => clearTimeout(timer);
-    }, [text, speed]);
+    }, [text, speed, scrollX]);
 
     const onTextLayout = (event) => {
         textWidth.current = event.nativeEvent.layout.width;
@@ -55,7 +56,7 @@ const MarqueeHeader = ({
 
 const styles = StyleSheet.create({
     container: {
-        height: 32,
+        height: 28,
         backgroundColor: '#ffffffff',
         justifyContent: 'center',
         overflow: 'hidden',

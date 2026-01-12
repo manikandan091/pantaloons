@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screen/HomeScreen';
@@ -8,8 +8,6 @@ import SearchScreen from '../screen/SearchScreen';
 import ProfileStackNavigator from './ProfileStackNavigator';
 
 const Tab = createBottomTabNavigator();
-
-
 
 const TabButton = (props) => {
     const { accessibilityState, style, children } = props;
@@ -115,12 +113,12 @@ const styles = StyleSheet.create({
     },
     activeIndicator: {
         position: 'absolute',
-        top: 0,
+        top: 1,
         left: 0,
         right: 0,
-        height: 3,
-        backgroundColor: '#009688',
-        width: '100%',
+        height: 10,
+        backgroundColor: '#00b0b5',
+        zIndex: 10,
     },
 });
 
