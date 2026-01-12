@@ -13,23 +13,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { fetchLocationByPincode, isValidPincode } from '../../utils/pincodeService';
 import AddressMap from './AddressMap';
 
-const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
+const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        mobileNumber: '',
-        address: '',
-        houseNo: '',
-        streetName: '',
-        area: '',
-        landmark: '',
-        pincode: '',
-        city: '',
-        state: '',
-        latitude: '',
-        longitude: '',
-        addressType: 'Home',
-        isDefault: false,
+        firstName: initialData?.firstName || '',
+        lastName: initialData?.lastName || '',
+        mobileNumber: initialData?.mobileNumber || '',
+        address: initialData?.address || '',
+        houseNo: initialData?.houseNo || '',
+        streetName: initialData?.streetName || '',
+        area: initialData?.area || '',
+        landmark: initialData?.landmark || '',
+        pincode: initialData?.pincode || '',
+        city: initialData?.city || '',
+        state: initialData?.state || '',
+        latitude: initialData?.latitude || '',
+        longitude: initialData?.longitude || '',
+        addressType: (initialData?.addressType === 'Home' || initialData?.addressType === 'Office' || !initialData?.addressType) ? (initialData?.addressType || 'Home') : 'Others',
+        customAddressType: (initialData?.addressType === 'Home' || initialData?.addressType === 'Office' || !initialData?.addressType) ? '' : (initialData?.addressType || ''),
+        isDefault: initialData?.isDefault || false,
     });
 
     const [errors, setErrors] = useState({});
@@ -131,6 +132,10 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
             newErrors.state = 'State is required';
         }
 
+        if (formData.addressType === 'Others' && !formData.customAddressType.trim()) {
+            newErrors.customAddressType = 'Please specify the address type';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -142,7 +147,13 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
             setTimeout(() => {
                 setLoading(false);
                 if (onSubmit) {
-                    onSubmit(formData);
+                    const finalData = { ...formData };
+                    if (finalData.addressType === 'Others') {
+                        finalData.addressType = finalData.customAddressType;
+                    }
+                    delete finalData.customAddressType;
+
+                    onSubmit(initialData?.id ? { ...finalData, id: initialData.id } : finalData);
                 }
             }, 1000);
         }
@@ -153,7 +164,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
             <View style={styles.formContent}>
                 {/* Contact Details Section */}
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>ADD ADDRESS</Text>
+                    <Text style={styles.sectionTitle}>{initialData?.id ? 'EDIT ADDRESS' : 'ADD ADDRESS'}</Text>
                     <TouchableOpacity onPress={onBack} style={styles.closeButton}>
                         <Ionicons name="close" size={24} color="#000000" />
                     </TouchableOpacity>
@@ -164,7 +175,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     <Text style={styles.label}>First name*</Text>
                     <TextInput
                         style={[styles.input, errors.firstName && styles.inputError]}
-                        placeholder="Mani"
+                        placeholder="John"
                         value={formData.firstName}
                         onChangeText={(value) => handleInputChange('firstName', value)}
                         placeholderTextColor="#999999"
@@ -177,7 +188,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     <Text style={styles.label}>Last name</Text>
                     <TextInput
                         style={[styles.input, errors.lastName && styles.inputError]}
-                        placeholder="M"
+                        placeholder="Doe"
                         value={formData.lastName}
                         onChangeText={(value) => handleInputChange('lastName', value)}
                         placeholderTextColor="#999999"
@@ -190,7 +201,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     <Text style={styles.label}>Mobile number*</Text>
                     <TextInput
                         style={[styles.input, errors.mobileNumber && styles.inputError]}
-                        placeholder="7395851198"
+                        placeholder="9123456789"
                         value={formData.mobileNumber}
                         onChangeText={handlePhoneChange}
                         keyboardType="phone-pad"
@@ -401,6 +412,20 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     </View>
                 </View>
 
+                {/* Custom Address Type Input */}
+                {formData.addressType === 'Others' && (
+                    <View style={styles.fieldContainer}>
+                        <TextInput
+                            style={[styles.input, errors.customAddressType && styles.inputError]}
+                            placeholder="e.g. Gym, Friend's house"
+                            value={formData.customAddressType}
+                            onChangeText={(value) => handleInputChange('customAddressType', value)}
+                            placeholderTextColor="#999999"
+                        />
+                        {errors.customAddressType && <Text style={styles.errorText}>{errors.customAddressType}</Text>}
+                    </View>
+                )}
+
                 {/* Make this as default address */}
                 <TouchableOpacity
                     style={styles.checkboxContainer}
@@ -425,7 +450,9 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
                     {loading ? (
                         <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
-                        <Text style={styles.submitButtonText}>SHIP TO THIS ADDRESS</Text>
+                        <Text style={styles.submitButtonText}>
+                            {initialData?.id ? 'SAVE ADDRESS' : 'ADD ADDRESS'}
+                        </Text>
                     )}
                 </TouchableOpacity>
             </View>
@@ -562,9 +589,9 @@ const styles = StyleSheet.create({
         color: '#000000',
     },
     submitButton: {
-        backgroundColor: '#00BCD4',
+        backgroundColor: '#00A1A5',
         paddingVertical: 14,
-        borderRadius: 6,
+        borderRadius: 24,
         alignItems: 'center',
         marginTop: 8,
         marginBottom: 24,
@@ -576,7 +603,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 15,
         fontWeight: '700',
-        letterSpacing: 0.5,
+        letterSpacing: 2.33,
     },
 });
 

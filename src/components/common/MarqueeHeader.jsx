@@ -56,7 +56,7 @@ const MarqueeHeader = ({
 
 const styles = StyleSheet.create({
     container: {
-        height: 32,
+        height: 28,
         backgroundColor: '#ffffffff',
         justifyContent: 'center',
         overflow: 'hidden',
