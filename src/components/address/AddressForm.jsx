@@ -3,15 +3,16 @@ import {
     View,
     Text,
     TextInput,
-
     StyleSheet,
     TouchableOpacity,
     ScrollView,
     ActivityIndicator,
-    Modal,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddressMap from './AddressMap';
+import { GOOGLE_MAP_API_KEY } from '@env';
+
+const ADDRESS_TYPES = ['Home', 'Office', 'Others'];
 
 const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
     const [formData, setFormData] = useState({
@@ -35,22 +36,29 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
-    const [pincodeLoading, setPincodeLoading] = useState(false);
     const [showMap, setShowMap] = useState(false);
+    const [mainScrollEnabled, setMainScrollEnabled] = useState(true);
 
-    const handleInputChange = (field, value) => {
+    const handleInputChange = React.useCallback((field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         if (errors[field]) {
-
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
-    };
+    }, [errors]);
 
-  
+    const handlePincodeChange = React.useCallback((value) => {
+        const numericValue = value.replace(/[^0-9]/g, '');
+        handleInputChange('pincode', numericValue);
+    }, [handleInputChange]);
 
-   
+    const handlePhoneChange = React.useCallback((value) => {
+        const numericValue = value.replace(/[^0-9]/g, '');
+        if (numericValue.length <= 10) {
+            handleInputChange('mobileNumber', numericValue);
+        }
+    }, [handleInputChange]);
 
-    const validateForm = () => {
+    const validateForm = React.useCallback(() => {
         const newErrors = {};
 
         if (!formData.firstName.trim()) {
@@ -81,7 +89,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
 
         if (!formData.pincode) {
             newErrors.pincode = 'Pincode is required';
-        } else if (!formData.pincode) {
+        } else if (formData.pincode.length !== 6) {
             newErrors.pincode = 'Please enter a valid 6-digit pincode';
         }
 
@@ -99,13 +107,12 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [formData]);
 
-    const handleSubmit = () => {
+    const handleSubmit = React.useCallback(() => {
         if (validateForm()) {
             setLoading(true);
             setTimeout(() => {
-
                 setLoading(false);
                 if (onSubmit) {
                     const finalData = { ...formData };
@@ -118,10 +125,14 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                 }
             }, 1000);
         }
-    };
+    }, [formData, validateForm, onSubmit, initialData]);
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={mainScrollEnabled}
+        >
             <View style={styles.formContent}>
                 <View style={styles.sectionHeader}>
 
@@ -187,8 +198,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                 </TouchableOpacity>
 
                 {showMap && (
-
-                   <View style={styles.mapContainer}>
+                    <View style={styles.mapContainer}>
                         <AddressMap
                             onMapTouchStart={() => setMainScrollEnabled(false)}
                             onMapTouchEnd={() => setMainScrollEnabled(true)}
@@ -275,29 +285,20 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
-
                     <Text style={styles.label}>Pincode*</Text>
-                    <View style={styles.inputWithLoader}>
-                        <TextInput
-                            style={[styles.input, errors.pincode && styles.inputError]}
-                            placeholder=""
-                            value={formData.pincode}
-                            keyboardType="numeric"
-                            maxLength={6}
-                            placeholderTextColor="#999999"
-                        />
-                        {pincodeLoading && (
-                            <ActivityIndicator
-                                size="small"
-                                color="#00BCD4"
-                                style={styles.loader}
-                            />
-                        )}
-                    </View>
+                    <TextInput
+                        style={[styles.input, errors.pincode && styles.inputError]}
+                        placeholder=""
+                        value={formData.pincode}
+                        onChangeText={handlePincodeChange}
+                        keyboardType="numeric"
+                        maxLength={6}
+                        placeholderTextColor="#999999"
+                    />
                     {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
                 </View>
 
-               <View style={styles.fieldContainer}>
+                <View style={styles.fieldContainer}>
                     <Text style={styles.label}>City/District*</Text>
                     <TextInput
                         style={[styles.input]}
@@ -309,7 +310,6 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                 </View>
 
                 <View style={styles.fieldContainer}>
-
                     <Text style={styles.label}>State*</Text>
                     <TextInput
                         style={[styles.input]}
@@ -321,12 +321,11 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                 </View>
 
                 {formData.latitude !== '' && (
-
                     <View style={styles.fieldContainer}>
                         <Text style={styles.label}>Latitude</Text>
                         <TextInput
                             style={[styles.input, styles.disabledInput]}
-                            value={formData.latitude}
+                            value={String(formData.latitude)}
                             editable={false}
                             placeholderTextColor="#999999"
                         />
@@ -334,12 +333,11 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                 )}
 
                 {formData.longitude !== '' && (
-
                     <View style={styles.fieldContainer}>
                         <Text style={styles.label}>Longitude</Text>
                         <TextInput
                             style={[styles.input, styles.disabledInput]}
-                            value={formData.longitude}
+                            value={String(formData.longitude)}
                             editable={false}
                             placeholderTextColor="#999999"
                         />
@@ -347,10 +345,9 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                 )}
 
                 <View style={styles.fieldContainer}>
-
                     <Text style={styles.label}>Address Type</Text>
                     <View style={styles.addressTypeContainer}>
-                        {['Home', 'Office', 'Others'].map((type) => (
+                        {ADDRESS_TYPES.map((type) => (
                             <TouchableOpacity
                                 key={type}
                                 style={[
@@ -424,12 +421,17 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffffffff',
+        backgroundColor: '#FFFFFF',
         width: '90%',
-        boxShadow: '0px 4px 4px rgba(0.25, 0.25, 0.25, 0.25)',
         borderRadius: 12,
-        margin: 'auto',
+        alignSelf: 'center',
         marginTop: 16,
+        // Using standard React Native shadow properties for better mobile compatibility
+        elevation: 4,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
     formContent: {
         padding: 16,

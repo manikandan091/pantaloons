@@ -7,7 +7,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const AddressMap = ({
     initialRegion,
     onLocationSelect,
-    markerCoordinate
+    markerCoordinate,
+    onMapTouchStart,
+    onMapTouchEnd
 }) => {
     const [region, setRegion] = useState(
         initialRegion || {
@@ -115,7 +117,19 @@ const AddressMap = ({
     };
 
     return (
-        <View style={styles.container}>
+        <View
+            style={styles.container}
+            onStartShouldSetResponderCapture={() => {
+                if (onMapTouchStart) onMapTouchStart();
+                return false;
+            }}
+            onResponderRelease={() => {
+                if (onMapTouchEnd) onMapTouchEnd();
+            }}
+            onResponderTerminate={() => {
+                if (onMapTouchEnd) onMapTouchEnd();
+            }}
+        >
             <MapView
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
@@ -123,6 +137,9 @@ const AddressMap = ({
                 onRegionChangeComplete={setRegion}
                 onPress={handleMapPress}
                 zoomControlEnabled
+                onPanDrag={() => {
+                    if (onMapTouchStart) onMapTouchStart();
+                }}
             >
                 <Marker
                     coordinate={markerPosition}
