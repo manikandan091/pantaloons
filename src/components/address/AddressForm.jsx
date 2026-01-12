@@ -153,7 +153,7 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack }) => {
             <View style={styles.formContent}>
                 {/* Contact Details Section */}
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Contact Details</Text>
+                    <Text style={styles.sectionTitle}>ADD ADDRESS</Text>
                     <TouchableOpacity onPress={onBack} style={styles.closeButton}>
                         <Ionicons name="close" size={24} color="#000000" />
                     </TouchableOpacity>
@@ -460,9 +460,10 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     sectionTitle: {
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: '700',
         color: '#000000',
+        textAlign: 'center',
     },
     fieldContainer: {
         marginBottom: 16,
