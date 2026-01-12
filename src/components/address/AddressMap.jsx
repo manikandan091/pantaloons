@@ -9,27 +9,27 @@ const AddressMap = ({
     onLocationSelect,
     markerCoordinate,
     onMapTouchStart,
-    onMapTouchEnd
+    onMapTouchEnd,
 }) => {
     const [region, setRegion] = useState(
         initialRegion || {
-            latitude: 28.6139,
-            longitude: 77.2090,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitude: 11.1271,
+            longitude: 78.6569,
+            latitudeDelta: 2.0,
+            longitudeDelta: 2.0,
         }
     );
-
-    const [markerPosition, setMarkerPosition] = useState(
+        const [markerPosition, setMarkerPosition] = useState(
         markerCoordinate || {
             latitude: 28.6139,
             longitude: 77.2090,
         }
     );
 
+
     useEffect(() => {
         if (markerCoordinate) {
-            setMarkerPosition(markerCoordinate);
+             setMarkerPosition(markerCoordinate);
             setRegion(prev => ({
                 ...prev,
                 latitude: markerCoordinate.latitude,
@@ -70,35 +70,26 @@ const AddressMap = ({
                     const newRegion = {
                         latitude,
                         longitude,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
                     };
-                    const newMarker = { latitude, longitude };
-
                     setRegion(newRegion);
-                    setMarkerPosition(newMarker);
-
+                    setMarkerPosition(newRegion);
                     if (onLocationSelect) {
                         onLocationSelect({ latitude, longitude });
                     }
                 },
                 (error) => {
                     console.error('Error getting location:', error);
-                    let errorMessage = 'Unable to get current location. Please try again.';
-                    if (error.code === 1) errorMessage = 'Location permission denied.';
-                    if (error.code === 2) errorMessage = 'Location provider unavailable. Make sure GPS is on.';
-                    if (error.code === 3) errorMessage = 'Location request timed out. Please try again.';
-
-                    Alert.alert('Location Error', errorMessage + `\n(Dev info: ${error.message})`);
+                    Alert.alert('Location Error', 'Unable to get current location.');
                 },
                 { enableHighAccuracy: false, timeout: 30000, maximumAge: 10000 }
             );
         } else {
-            Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
+            Alert.alert('Permission Denied', 'Location permission is required.');
         }
     };
-
-    const handleMarkerDragEnd = (e) => {
+       const handleMarkerDragEnd = (e) => {
         const { latitude, longitude } = e.nativeEvent.coordinate;
         setMarkerPosition({ latitude, longitude });
 
@@ -106,7 +97,6 @@ const AddressMap = ({
             onLocationSelect({ latitude, longitude });
         }
     };
-
     const handleMapPress = (e) => {
         const { latitude, longitude } = e.nativeEvent.coordinate;
         setMarkerPosition({ latitude, longitude });
@@ -116,48 +106,58 @@ const AddressMap = ({
         }
     };
 
+    const handleRegionChangeComplete = (newRegion) => {
+        console.log('[AddressMap] Region changed:', newRegion);
+        setRegion(newRegion);
+        // if (onLocationSelect) {
+        //     console.log('[AddressMap] Triggering onLocationSelect');
+        //     onLocationSelect({
+        //         latitude: newRegion.latitude,
+        //         longitude: newRegion.longitude
+        //     });
+        // }
+    };
+
     return (
         <View
             style={styles.container}
-            onStartShouldSetResponderCapture={() => {
-                if (onMapTouchStart) onMapTouchStart();
-                return false;
-            }}
-            onResponderRelease={() => {
-                if (onMapTouchEnd) onMapTouchEnd();
-            }}
-            onResponderTerminate={() => {
-                if (onMapTouchEnd) onMapTouchEnd();
-            }}
+            onTouchStart={onMapTouchStart}
+            onTouchEnd={onMapTouchEnd}
+            onTouchCancel={onMapTouchEnd}
         >
             <MapView
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
                 region={region}
-                onRegionChangeComplete={setRegion}
+                onRegionChangeComplete={handleRegionChangeComplete}
+                scrollEnabled
+                zoomEnabled
+                pitchEnabled
+                rotateEnabled
+                showsUserLocation={true}
+                showsMyLocationButton={true}
+                loadingEnabled
                 onPress={handleMapPress}
-                zoomControlEnabled
-                onPanDrag={() => {
-                    if (onMapTouchStart) onMapTouchStart();
-                }}
-            >
-                <Marker
-                    coordinate={markerPosition}
+                >
+                 <Marker
+                 coordinate={markerPosition}
                     draggable
                     onDragEnd={handleMarkerDragEnd}
                     title="Selected Location"
                     description="Drag to adjust position"
-                />
-            </MapView>
+  />
+        </MapView>
+
+            
 
             <TouchableOpacity
                 style={styles.currentLocationButton}
                 onPress={handleUseCurrentLocation}
-                activeOpacity={0.7}
             >
-                <Ionicons name="navigate" size={24} color="#FFFFFF" />
+                <Ionicons name="navigate" size={24} color="#fff" />
             </TouchableOpacity>
         </View>
+
     );
 };
 
@@ -165,6 +165,9 @@ const styles = StyleSheet.create({
     container: {
         height: 300,
         width: '100%',
+        backgroundColor: '#f0f0f0',
+        borderColor: '#ddd',
+        borderWidth: 1,
         borderRadius: 12,
         overflow: 'hidden',
         position: 'relative',
@@ -172,11 +175,23 @@ const styles = StyleSheet.create({
     map: {
         ...StyleSheet.absoluteFill,
     },
+    centerMarkerContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 40,
+        zIndex: 10,
+        elevation: 10,
+    },
     currentLocationButton: {
         position: 'absolute',
         bottom: 16,
         right: 16,
-        backgroundColor: '#00BCD4',
+        backgroundColor: '#186c00',
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -187,6 +202,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
+        zIndex: 11,
     },
 });
 

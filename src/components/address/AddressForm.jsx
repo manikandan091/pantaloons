@@ -221,6 +221,31 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                     </View>
                 )}
 
+                {formData.latitude !== '' && (
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Latitude</Text>
+                        <TextInput
+                            style={[styles.input, styles.disabledInput]}
+                            value={String(formData.latitude)}
+                            editable={false}
+                            placeholderTextColor="#999999"
+                        />
+                    </View>
+                )}
+
+                {formData.longitude !== '' && (
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Longitude</Text>
+                        <TextInput
+                            style={[styles.input, styles.disabledInput]}
+                            value={String(formData.longitude)}
+                            editable={false}
+                            placeholderTextColor="#999999"
+                        />
+                    </View>
+                )}
+
+
                 <View style={styles.fieldContainer}>
 
                     <Text style={styles.label}>Address</Text>
@@ -319,30 +344,6 @@ const AddressForm = ({ onSubmit, selectedLocation, onBack, initialData }) => {
                         placeholderTextColor="#999999"
                     />
                 </View>
-
-                {formData.latitude !== '' && (
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Latitude</Text>
-                        <TextInput
-                            style={[styles.input, styles.disabledInput]}
-                            value={String(formData.latitude)}
-                            editable={false}
-                            placeholderTextColor="#999999"
-                        />
-                    </View>
-                )}
-
-                {formData.longitude !== '' && (
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Longitude</Text>
-                        <TextInput
-                            style={[styles.input, styles.disabledInput]}
-                            value={String(formData.longitude)}
-                            editable={false}
-                            placeholderTextColor="#999999"
-                        />
-                    </View>
-                )}
 
                 <View style={styles.fieldContainer}>
                     <Text style={styles.label}>Address Type</Text>
